@@ -13,7 +13,6 @@ def process_node_edges(G, node, accumulated_weights, strategy_func):
 
     return edges_removed
 
-
 def oldest_first(G, node):
     return sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('date'))
 

@@ -1,24 +1,17 @@
 import os
-from datetime import datetime
 import pickle
 
-def save_graph(G):
+def save_graph(G, filename):
     """
     Sauvegarde un graphe dans un fichier.
 
     Args:
     G (networkx.Graph): Le graphe à sauvegarder.
     """
-    num_nodes = G.number_of_nodes()
-    num_edges = G.number_of_edges()
-    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-    filename = f"graphs/graph_n{num_nodes}_e{num_edges}_{current_time}.gpickle"
-
     with open(filename, 'wb') as f:
         pickle.dump(G, f)
 
-    print("Graphe sauvegardé dans : ", filename)
+
 
 def load_graph(filename):
     """
