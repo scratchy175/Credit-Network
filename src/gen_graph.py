@@ -4,15 +4,9 @@ import sys
 import networkx as nx
 import random
 from datetime import date,timedelta
-from src.graph_utils import save_graph
-import json
+from graph_utils import save_graph
 from datetime import datetime
 
-def load_config(config_file):
-    with open(config_file, 'r') as file:
-        return json.load(file)
-
-config = load_config("config.json")
 
 def random_date(start_year):
     # Generate a date between January 1 of start_year and December 31 of end_year
@@ -33,12 +27,11 @@ def create_new_graph(num_nodes):
     """
     Crée un nouveau graphe.
     """
-    # Get parameters from config file
-    min_edges = config['graph_parameters']['min_edges']
-    max_edges = config['graph_parameters']['max_edges']
-    min_weight = config['graph_parameters']['min_weight']
-    max_weight = config['graph_parameters']['max_weight']
-    min_date = config['graph_parameters']['min_date']
+    min_edges = int(input("Nombre minimum d'arêtes par noeud : "))
+    max_edges = int(input("Nombre maximum d'arêtes par noeud : "))
+    min_weight = int(input("Poids minimum d'une arête : "))
+    max_weight = int(input("Poids maximum d'une arête : "))
+    min_date = int(input("Année de début : "))
 
     # Create a MultiDiGraph
     G = nx.MultiDiGraph()

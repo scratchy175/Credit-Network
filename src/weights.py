@@ -1,13 +1,6 @@
 import random
-import json
 
-def load_config(config_file):
-    with open(config_file, 'r') as file:
-        return json.load(file)
-
-config = load_config("config.json")
-
-def random_weights(G, multiplier):
+def random_weights(G, multiplier, tot_weight):
     """
     Ajoute un poids aléatoire à chaque noeud du graphe G.
 
@@ -16,12 +9,22 @@ def random_weights(G, multiplier):
     min_weight (int): Le poids minimum possible.
     max_weight (int): Le poids maximum possible.
     """
-    min_weight = config['weights_strategies'][0]['parameters']['min_weight']
-    max_weight = config['weights_strategies'][0]['parameters']['max_weight']
-    for node in G.nodes():
-        G.nodes[node]['weight'] = random.randint(min_weight, max_weight) * multiplier
+    total_weight = tot_weight * multiplier
 
-def same_weight(G, multiplier):
+    # Calculate the number of nodes in the graph
+    num_nodes = G.number_of_nodes()
+
+    # Ensure the total_weight is distributed among the nodes
+    # Generate a list of random weights that sum up to total_weight
+    weights = [random.random() for _ in range(num_nodes)]
+    total_random_weight = sum(weights)
+    normalized_weights = [weight / total_random_weight * total_weight for weight in weights]
+
+    # Distribute the weights among the nodes
+    for node, weight in zip(G.nodes(), normalized_weights):
+        G.nodes[node]['weight'] = weight
+
+def same_weight(G, multiplier, tot_weight):
     """
     Ajoute un poids identique à chaque noeud du graphe G.
 
@@ -29,10 +32,17 @@ def same_weight(G, multiplier):
     G (NetworkX graph): Le graphe à modifier.
     weight (int): Le poids à ajouter.
     """
-    weight = config['weights_strategies'][1]['parameters']['weight']
+    total_weight = tot_weight * multiplier
+    # Calculate the number of nodes in the graph
+    num_nodes = G.number_of_nodes()
+
+    # Calculate the weight each node should receive
+    weight_per_node = total_weight / num_nodes if num_nodes > 0 else 0
+
+    # Distribute the weight among the nodes
     for node in G.nodes():
-        G.nodes[node]['weight'] = weight * multiplier
+        G.nodes[node]['weight'] = int(weight_per_node)
 
 
 
-# TODO : add more strategies
+# TODO : add more strategies here
