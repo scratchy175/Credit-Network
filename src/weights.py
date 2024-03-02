@@ -1,5 +1,6 @@
 import random
 
+#a tester 
 def random_weights(G, multiplier, tot_weight):
     """
     Ajoute un poids aléatoire à chaque noeud du graphe G.
@@ -9,7 +10,7 @@ def random_weights(G, multiplier, tot_weight):
     min_weight (int): Le poids minimum possible.
     max_weight (int): Le poids maximum possible.
     """
-    total_weight = tot_weight * multiplier
+    total_weight:int = tot_weight * multiplier
 
     # Calculate the number of nodes in the graph
     num_nodes = G.number_of_nodes()
@@ -24,6 +25,8 @@ def random_weights(G, multiplier, tot_weight):
     for node, weight in zip(G.nodes(), normalized_weights):
         G.nodes[node]['weight'] = weight
 
+
+# que faire si la division n'est pas exacte ? que faire de l'argent qui reste ?
 def same_weight(G, multiplier, tot_weight):
     """
     Ajoute un poids identique à chaque noeud du graphe G.
@@ -32,7 +35,7 @@ def same_weight(G, multiplier, tot_weight):
     G (NetworkX graph): Le graphe à modifier.
     weight (int): Le poids à ajouter.
     """
-    total_weight = tot_weight * multiplier
+    total_weight:int = tot_weight * multiplier
     # Calculate the number of nodes in the graph
     num_nodes = G.number_of_nodes()
 

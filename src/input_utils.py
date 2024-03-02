@@ -75,7 +75,7 @@ def choose_weights_strategy():
 
 def input_simulation_parameters():
     num_simulations = int(input("How many times should the simulation run? "))
-    weight_multiplier = int(input("Enter the weight multiplication factor: "))
+    weight_multiplier = float(input("Enter the weight multiplication factor: "))
     return num_simulations, weight_multiplier
 
 
