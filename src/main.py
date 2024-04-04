@@ -30,13 +30,13 @@ def plot_graph(data):
 
 def save_bankruptcy_data(simulation_dir, simulation_num, SG, total_weight):
 
-   
+
     """Append the number of bankruptcies and total weight in a text file."""
     
     filename = os.path.join(simulation_dir, "bankruptcy_data_all_simulations.txt")
 
     with open(filename, 'a') as txtfile:
-        bankruptcies = sum(1 for node in SG.nodes() if SG.out_degree(node) > 0)
+        bankruptcies = sum(SG.out_degree(node) > 0 for node in SG.nodes())
         txtfile.write(f"Simulation {simulation_num} : (Nombre de faillites : {bankruptcies}, Poids total : {total_weight})\n")
     return bankruptcies
 

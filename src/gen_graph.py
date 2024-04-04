@@ -6,6 +6,7 @@ import random
 from datetime import date,timedelta
 from graph_utils import save_graph
 from datetime import datetime
+import numpy as np
 
 
 def random_date(start_year):
@@ -22,6 +23,54 @@ def random_date(start_year):
     # Return the random date
     return start_date + timedelta(days=random_number_of_days)
 
+def directed_BA_model_in_degree_with_min_out_degree(N, m, seed=None):
+    """
+    Generates a network using a directed version of the BA model focused on in-degree,
+    ensuring each node has an out-degree of at least 1.
+    
+    Parameters:
+    - N: Final number of nodes
+    - m: Number of edges to attach from existing nodes to each new node
+    - seed: Seed for the random number generator
+    """
+    min_weight = 100
+    max_weight = 1000000
+    min_date = 2000
+
+    if m < 1 or m >= N:
+        raise ValueError("m must be in range 1 <= m < N")
+    
+    np.random.seed(seed)
+    
+    # Start with an initial directed graph of m + 1 nodes, ensuring each has at least one out-degree
+    G = nx.MultiDiGraph()
+    G.add_nodes_from(range(m + 1))
+    for i in range(m):
+        G.add_edge(i, i + 1, weight= random.randint(min_weight, max_weight),date=random_date(min_date))  # Ensure initial nodes have at least one out-degree
+    
+    # Add the rest of the nodes, each with m edges
+    for new_node in range(m + 1, N):
+        G.add_node(new_node)
+        
+        # Ensure at least one out-degree by selecting a random target for an outgoing link
+        random_target = np.random.choice(list(G.nodes()))
+        G.add_edge(new_node, random_target, weight= random.randint(min_weight,max_weight),date=random_date(min_date))
+        
+        # Calculate the probability for each node based on in-degree for the remaining m-1 links
+        probs = np.array([G.in_degree(node) for node in G.nodes()])
+        total_in_degree = probs.sum()
+        probs = probs / total_in_degree
+        
+        # Choose m-1 distinct nodes to connect to, excluding the randomly selected target
+        possible_targets = [node for node in G.nodes() if node != random_target]
+        probs_adjusted = np.array([G.in_degree(node) for node in possible_targets])
+        probs_adjusted = probs_adjusted / probs_adjusted.sum()
+        
+        targets = np.random.choice(possible_targets, size=m-1, replace=False, p=probs_adjusted)
+        for target in targets:
+            G.add_edge(target, new_node, weight= random.randint(min_weight,max_weight),date=random_date(min_date))
+    
+    return G
 
 def create_new_graph(num_nodes):
     """
