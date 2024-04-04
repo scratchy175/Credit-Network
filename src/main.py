@@ -6,32 +6,89 @@ from disp_graph import save_png
 from input_utils import *
 import copy
 import time
-import csv
 from pathlib import Path
+import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
+import numpy as np
+
+def plot_graph(data):
+    """Plot a graph with number of bankruptcies on the x-axis and total_weight on the y-axis."""
+    # Unpack the data
+    total_weights, bankruptcies = zip(*data)
+
+    # Create the plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(bankruptcies, total_weights, marker='o')
+
+    # Label the axes
+    plt.xlabel('Poids total')
+    plt.ylabel('Nombre de faillites')
+
+    # Show the plot
+    plt.show()
 
 
-def save_detailed_node_data(simulation_dir, simulation_num, SG):
-    """Save detailed node data including the sum of all node weights and each outgoing edge's weight."""
-    filename = os.path.join(simulation_dir, f"detailed_node_data_simulation_{simulation_num}.csv")
+def save_bankruptcy_data(simulation_dir, simulation_num, SG, total_weight):
 
-    with open(filename, 'w', newline='') as csvfile:
-        fieldnames = ['node', 'node_weight', 'outgoing_edges', 'sum_out_edge_weights', 'out_edge_weights']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+    """Append the number of bankruptcies and total weight in a text file."""
+    
+    filename = os.path.join(simulation_dir, "bankruptcy_data_all_simulations.txt")
+
+    with open(filename, 'a') as txtfile:
+        bankruptcies = sum(SG.out_degree(node) > 0 for node in SG.nodes())
+        txtfile.write(f"Simulation {simulation_num} : (Nombre de faillites : {bankruptcies}, Poids total : {total_weight})\n")
+    return bankruptcies
+
+def plot_graph_2(data):
+    """Plot a smooth graph with number of bankruptcies on the x-axis and total_weight on the y-axis."""
+    # Unpack the data
+    total_weights, bankruptcies = zip(*data)
+
+    # Create an interpolation function
+    x = np.array(bankruptcies)
+    y = np.array(total_weights)
+    f = interp1d(x, y, kind='cubic')
+
+    # Create the x values of the smooth curve
+    x_smooth = np.linspace(x.min(), x.max(), 500)
+
+    # Create the plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(x_smooth, f(x_smooth), marker='')
+
+    # Label the axes
+    plt.xlabel('Nombre de faillites')
+    plt.ylabel('Poids total')
+
+    # Show the plot
+    plt.show()
+
+
+
+
+# def save_detailed_node_data(simulation_dir, simulation_num, SG):
+#     """Save detailed node data including the sum of all node weights and each outgoing edge's weight."""
+#     filename = os.path.join(simulation_dir, f"detailed_node_data_simulation_{simulation_num}.csv")
+
+#     with open(filename, 'w', newline='') as csvfile:
+#         fieldnames = ['node', 'node_weight', 'outgoing_edges', 'sum_out_edge_weights', 'out_edge_weights']
+#         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         
-        writer.writeheader()
-        for node in SG.nodes():
-            node_weight = SG.nodes[node].get('weight', 0)
-            out_edges = SG.out_edges(node, data=True)
-            sum_out_edge_weights = sum(data['weight'] for _, _, data in out_edges)
-            outgoing_edges = SG.out_degree(node)
-            out_edge_weights = [data['weight'] for _, _, data in out_edges]
-            writer.writerow({
-                'node': node, 
-                'node_weight': node_weight, 
-                'outgoing_edges': outgoing_edges, 
-                'sum_out_edge_weights': sum_out_edge_weights,
-                'out_edge_weights': out_edge_weights
-            })
+#         writer.writeheader()
+#         for node in SG.nodes():
+#             node_weight = SG.nodes[node].get('weight', 0)
+#             out_edges = SG.out_edges(node, data=True)
+#             sum_out_edge_weights = sum(data['weight'] for _, _, data in out_edges)
+#             outgoing_edges = SG.out_degree(node)
+#             out_edge_weights = [data['weight'] for _, _, data in out_edges]
+#             writer.writerow({
+#                 'node': node, 
+#                 'node_weight': node_weight, 
+#                 'outgoing_edges': outgoing_edges, 
+#                 'sum_out_edge_weights': sum_out_edge_weights,
+#                 'out_edge_weights': out_edge_weights
+#             })
 
 
 if __name__ == "__main__":
@@ -50,10 +107,8 @@ if __name__ == "__main__":
     save_images =  input("Do you want to save the simulation images? (yes/no): ").lower().startswith('y')
 
     save_parameters(simulation_dir, Path(str(filename)).stem, "all_random" if random_strat else strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
-
-
+    list_of_bankruptcies = []
     for i in range(num_simulations):
-
         SG = copy.deepcopy(G)
         weights_func(SG, weight_multiplier*i if i > 0 else 1, total_weight)
 
@@ -70,14 +125,17 @@ if __name__ == "__main__":
 
             for node, weight in accumulated_weights.items():
                 SG.nodes[node]['weight'] += weight
-        
-        if save_graphs:
-            os.mkdir(f"simulations/{timestamp}/graphs")
-            save_graph(SG,f"simulations/{timestamp}/graphs/simulation_{i+1}.gpickle")
-        if save_images:
-            os.mkdir(f"simulations/{timestamp}/images")
-            save_png(SG, f"simulations/{timestamp}/images/simulation_{i+1}.png")
-        save_detailed_node_data(simulation_dir, i+1, SG)
-        print(f"Simulation {i+1} done.")
-    print("All simulations done.")
 
+        if save_graphs:
+            os.mkdir(f"{simulation_dir}/graphs")
+            save_graph(SG,f"{simulation_dir}/graphs/simulation_{i+1}.gpickle")
+        if save_images:
+            os.mkdir(f"{simulation_dir}/images")
+            save_png(SG, f"{simulation_dir}/images/simulation_{i+1}.png")
+        true_Total_Weight = total_weight * (weight_multiplier * i if i > 0 else 1)
+       
+        print(f"Simulation {i+1} done.")
+        list_of_bankruptcies.append((save_bankruptcy_data(simulation_dir, i+1, SG, true_Total_Weight),true_Total_Weight))
+    print("All simulations done.")
+    print(list_of_bankruptcies)
+    plot_graph_2(list_of_bankruptcies)
