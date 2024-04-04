@@ -1,11 +1,8 @@
 import random
-from turtle import st
 
 def process_node_edges(G, node, accumulated_weights, strategy_func):
     edges_removed = False
     edges = strategy_func(G, node)
-    print(strategy_func.__name__)
-    print(edges)
 
     for u, v, data in edges:
         if G.nodes[u]['weight'] > 0 and G.nodes[u]['weight'] > data['weight']:
@@ -30,6 +27,7 @@ def lowest_weight_first(G, node):
     return sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'))
 
 def random_strategy(G, node):
-    return random.shuffle(list(G.out_edges(node, data=True)))
+    print("random")
+    return random.shuffle(list(G.out_edges(node, data=True))) #pas bon ca 
 
 # TODO : add more strategies
