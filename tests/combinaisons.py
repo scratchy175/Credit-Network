@@ -30,5 +30,3 @@ for comb in combinaisons:
 # Sauvegarde du dataframe en fichier CSV avec ";" comme séparateur
 csv_path = "combinaisons_graphe_strategies_semicolon.csv"
 df_combinaisons.to_csv(csv_path, sep=';', index=False)
-
-csv_path

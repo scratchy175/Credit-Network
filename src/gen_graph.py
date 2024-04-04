@@ -7,6 +7,13 @@ from datetime import date,timedelta
 from graph_utils import save_graph
 from datetime import datetime
 import numpy as np
+import matplotlib.pyplot as plt
+
+
+
+min_weight = 100
+max_weight = 1000000
+min_date = 2000
 
 
 def random_date(start_year):
@@ -33,9 +40,7 @@ def directed_BA_model_in_degree_with_min_out_degree(N, m, seed=None):
     - m: Number of edges to attach from existing nodes to each new node
     - seed: Seed for the random number generator
     """
-    min_weight = 100
-    max_weight = 1000000
-    min_date = 2000
+    
 
     if m < 1 or m >= N:
         raise ValueError("m must be in range 1 <= m < N")
@@ -72,38 +77,59 @@ def directed_BA_model_in_degree_with_min_out_degree(N, m, seed=None):
     
     return G
 
-def create_new_graph(num_nodes):
+def erdos_renyi_graph(n, p, seed=None):
+
+    # Create an Erdős–Rényi graph (not a multigraph)
+    G = nx.erdos_renyi_graph(n, p, directed=True, seed=seed)
+
+    # If you need to add multiple edges manually, you can do something like:
+    # for _ in range(100):  # Example: Attempt to add 100 edges randomly
+    #     u, v = random.sample(range(n), 2)
+    #     if random.random() < p:  # Use the same probability as before
+    #         MG.add_edge(u, v)
+    return nx.MultiDiGraph(G)
+
+def choose_graph():
     """
-    Crée un nouveau graphe.
+    Demande à l'utilisateur de choisir un type de graphe.
     """
-    min_edges = int(input("Nombre minimum d'arêtes par noeud : "))
-    max_edges = int(input("Nombre maximum d'arêtes par noeud : "))
-    min_weight = int(input("Poids minimum d'une arête : "))
-    max_weight = int(input("Poids maximum d'une arête : "))
-    min_date = int(input("Année de début : "))
+    print("Choisissez un type de graphe :")
+    print("1. Modèle de Barabási-Albert")
+    print("2. Modèle Erdős-Rényi")
+    choice = input("Votre choix : ")
 
-    # Create a MultiDiGraph
-    G = nx.MultiDiGraph()
+    if choice == "1":
+        num_nodes = int(input("Nombre de noeuds : "))
+        m = int(input("Nombre d'arêtes à attacher à chaque nouveau noeud : "))
+        G = directed_BA_model_in_degree_with_min_out_degree(num_nodes, m)
+        type_graph = f"BA_m{m}"
+    elif choice == "2":
+        num_nodes = int(input("Nombre de noeuds : "))
+        p = float(input("Probabilité d'ajouter une arête : "))
+        G = erdos_renyi_graph(num_nodes, p)
+        type_graph = f"ER_p{p}"
+    else:
+        print("Choix invalide.")
+        sys.exit(1)
 
-    # Add nodes
-    for node in range(1, num_nodes + 1):
-        G.add_node(node)
-
-    # Add edges with random labels
-    for node1 in G.nodes():
-        for node2 in G.nodes():
-            if node1 != node2:
-                for _ in range(random.randint(min_edges, max_edges)):
-                    G.add_edge(node1, node2, weight=random.randint(min_weight, max_weight), date=random_date(min_date))
-    
     num_nodes = G.number_of_nodes()
     num_edges = G.number_of_edges()
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-    filename = f"graphs/graph_n{num_nodes}_e{num_edges}_{current_time}.gpickle"
+    filename = f"graphs/{type_graph}_n{num_nodes}_e{num_edges}_{current_time}.gpickle"
     save_graph(G, filename)
     print("Graphe sauvegardé dans : ", filename)
     return G, filename
 
 if __name__ == "__main__":
-    create_new_graph(int(sys.argv[1]))
+    G,_ = choose_graph()
+    """out_degrees = [G.out_degree(node) for node in G.nodes()]
+    out_degrees.sort()
+    plt.plot(out_degrees)
+    plt.xlabel("Node Index")
+    plt.ylabel("Out-Degree")
+    plt.title("Out-Degree Distribution")
+    plt.show()"""
+
+    #print(f"Diameter of the graph: {nx.diameter(G)}")
+
+    # FAIRE UN TRUC AVEC LA SEED
