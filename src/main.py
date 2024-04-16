@@ -8,7 +8,6 @@ import copy
 import time
 from pathlib import Path
 import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
 import numpy as np
 
 def plot_graph(data):
@@ -30,13 +29,13 @@ def plot_graph(data):
 
 def save_bankruptcy_data(simulation_dir, simulation_num, SG, total_weight):
 
-   
+
     """Append the number of bankruptcies and total weight in a text file."""
     
     filename = os.path.join(simulation_dir, "bankruptcy_data_all_simulations.txt")
 
     with open(filename, 'a') as txtfile:
-        bankruptcies = sum(1 for node in SG.nodes() if SG.out_degree(node) > 0)
+        bankruptcies = sum(SG.out_degree(node) > 0 for node in SG.nodes())
         txtfile.write(f"Simulation {simulation_num} : (Nombre de faillites : {bankruptcies}, Poids total : {total_weight})\n")
     return bankruptcies
 
@@ -48,14 +47,10 @@ def plot_graph_2(data):
     # Create an interpolation function
     x = np.array(bankruptcies)
     y = np.array(total_weights)
-    f = interp1d(x, y, kind='cubic')
-
-    # Create the x values of the smooth curve
-    x_smooth = np.linspace(x.min(), x.max(), 500)
 
     # Create the plot
     plt.figure(figsize=(10, 6))
-    plt.plot(x_smooth, f(x_smooth), marker='')
+    plt.plot(x, y, marker='')
 
     # Label the axes
     plt.xlabel('Nombre de faillites')
@@ -103,8 +98,6 @@ if __name__ == "__main__":
     weights_func = choose_weights_strategy()
     total_weight = input_total_weight(G)
     num_simulations, weight_multiplier = input_simulation_parameters()
-    save_graphs = input("Do you want to save the simulation graphs? (yes/no): ").lower().startswith('y')
-    save_images =  input("Do you want to save the simulation images? (yes/no): ").lower().startswith('y')
 
     save_parameters(simulation_dir, Path(str(filename)).stem, "all_random" if random_strat else strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
     list_of_bankruptcies = []
@@ -126,12 +119,6 @@ if __name__ == "__main__":
             for node, weight in accumulated_weights.items():
                 SG.nodes[node]['weight'] += weight
 
-        if save_graphs:
-            os.mkdir(f"{simulation_dir}/graphs")
-            save_graph(SG,f"{simulation_dir}/graphs/simulation_{i+1}.gpickle")
-        if save_images:
-            os.mkdir(f"{simulation_dir}/images")
-            save_png(SG, f"{simulation_dir}/images/simulation_{i+1}.png")
         true_Total_Weight = total_weight * (weight_multiplier * i if i > 0 else 1)
        
         print(f"Simulation {i+1} done.")
