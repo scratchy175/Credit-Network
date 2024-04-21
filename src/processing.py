@@ -132,4 +132,59 @@ def definitionPayeurs(G):
         random_assignment[random_key].append(node)
     return random_assignment
 
-# TODO : add more strategies
+
+
+def debt_runner(G):
+    result = {}
+    for x in G.nodes():
+        # Initialisation des variables
+        montantTotal = 0
+        aPayer = []
+
+        # Trier les noeuds selon le nombre de dettes décroissant
+        prio = sorted(G.nodes(), key=lambda node: G.out_degree(node), reverse=True)
+
+        # Parcourir la liste triée
+        for node in prio:
+            if node in G[x]:  # Vérifier si l'agent x doit de l'argent à l'agent node
+                dette = G[x][node]['montant']  # Obtenir le montant de la dette
+                if montantTotal + dette < G.nodes[x]['capital']:
+                    montantTotal += dette
+                    aPayer.append((node, dette))  # Ajouter à la liste des dettes à payer
+                    G.remove_edge(x, node)  # Retirer la dette du graphe
+
+        # Mettre à jour le capital de l'agent x
+        G.nodes[x]['capital'] -= montantTotal
+
+        # Ajouter les dettes à payer de l'agent x au résultat
+        result[x] = aPayer
+
+    return result
+
+
+def back_to_the_richest(G):
+    result = {}
+    for x in G.nodes():
+        # Initialisation des variables
+        montantTotal = 0
+        aPayer = []
+
+        # Trier les noeuds selon le montant total des dettes croissant
+        prio = sorted(G.nodes(), key=lambda node: G.nodes[node]['mtDettes'])
+
+        # Parcourir la liste triée
+        for node in prio:
+            if node in G[x]:  # Vérifier si l'agent x doit de l'argent à l'agent node
+                dette = G[x][node]['montant']  # Obtenir le montant de la dette
+                if montantTotal + dette < G.nodes[x]['capital']:
+                    montantTotal += dette
+                    aPayer.append((node, dette))  # Ajouter à la liste des dettes à payer
+                    G.remove_edge(x, node)  # Retirer la dette du graphe
+
+        # Mettre à jour le capital de l'agent x
+        G.nodes[x]['capital'] -= montantTotal
+
+        # Ajouter les dettes à payer de l'agent x au résultat
+        result[x] = aPayer
+
+    return result
