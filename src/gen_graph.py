@@ -89,7 +89,7 @@ def erdos_renyi_graph(n, p, seed=None):
     #         MG.add_edge(u, v)
     return nx.MultiDiGraph(G)
 
-def choose_graph():
+def create_new_graph():
     """
     Demande à l'utilisateur de choisir un type de graphe.
     """
@@ -121,7 +121,7 @@ def choose_graph():
     return G, filename
 
 if __name__ == "__main__":
-    G,_ = choose_graph()
+    G,_ = create_new_graph()
     """out_degrees = [G.out_degree(node) for node in G.nodes()]
     out_degrees.sort()
     plt.plot(out_degrees)
