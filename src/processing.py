@@ -133,3 +133,23 @@ def definitionPayeurs(G):
     return random_assignment
 
 # TODO : add more strategies
+
+def argentPrete(G):
+    argentPreteParAgent = []
+    for node in G.nodes:
+        argentPreteParAgent.append(node,G.nodes[node]['weight'])
+    return argentPreteParAgent
+
+def bankBuster(G, listPret):
+    pret = listPret.copy()
+    aPayer = []
+    for node in G.nodes():
+        montantTotal = 0
+        nodeDette = []
+        for dette in G.out_edges(node, data=True):
+            nodeDette.append(dette,capitaldumecautoutdebut)
+        prio = sorted(pret, reverse=True)
+        for i in range(len(prio)):
+            if montantTotal + prio[i] < G.nodes[node]['weight']:
+                montantTotal = montantTotal - G.nodes[node]['weight']
+                aPayer.append
