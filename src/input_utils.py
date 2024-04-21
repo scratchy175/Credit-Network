@@ -52,8 +52,7 @@ def choose_graph():
         filename = available_graphs[int(choice)-1]
         G = load_graph(os.path.join("graphs", filename))
     elif load_or_create.lower() == 'create':
-        nb_nodes = int(input("How many nodes should the graph have? "))
-        G, filename = create_new_graph(nb_nodes)
+        G, filename = create_new_graph()
 
     return G, filename
 
