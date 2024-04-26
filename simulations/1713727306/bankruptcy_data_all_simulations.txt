@@ -1,0 +1,2 @@
+Simulation 1 : (Nombre de faillites : 5, Poids total : 122)
+Simulation 2 : (Nombre de faillites : 5, Poids total : 244.0)

@@ -1,4 +1,8 @@
 import random
+import pickle
+
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def process_node_edges(G, node, accumulated_weights, strategy_func):
     edges_removed = False
@@ -81,6 +85,8 @@ def sommeDettes(G):
             outgoing_weights[node] = 0
     return outgoing_weights
 
+
+
 def poidTotal(G):
     total_weight = sum(data['weight'] for _, _, data in G.edges(data=True))
     return total_weight
@@ -134,32 +140,65 @@ def definitionPayeurs(G):
 
 
 
-def debt_runner(G):
-    result = {}
-    for x in G.nodes():
-        # Initialisation des variables
-        montantTotal = 0
-        aPayer = []
+def debt_runner(G, node):
 
-        # Trier les noeuds selon le nombre de dettes décroissant
-        prio = sorted(G.nodes(), key=lambda node: G.out_degree(node), reverse=True)
+  
+    # dessin du graphe 
+    #with open("./graphs/graph_n5_e21_20240129_091000.gpickle", "rb") as f:
+        #G = pickle.load(f)
 
-        # Parcourir la liste triée
-        for node in prio:
-            if node in G[x]:  # Vérifier si l'agent x doit de l'argent à l'agent node
-                dette = G[x][node]['montant']  # Obtenir le montant de la dette
-                if montantTotal + dette < G.nodes[x]['capital']:
-                    montantTotal += dette
-                    aPayer.append((node, dette))  # Ajouter à la liste des dettes à payer
-                    G.remove_edge(x, node)  # Retirer la dette du graphe
+        # Dessiner le graphe
+        #pos = nx.spring_layout(G)  # Calculer les positions des noeuds pour une belle visualisation
+        #nx.draw(G, pos, with_labels=True)
 
-        # Mettre à jour le capital de l'agent x
-        G.nodes[x]['capital'] -= montantTotal
+        # Dessiner les poids des arcs
+        #edge_labels = nx.get_edge_attributes(G, 'weight')
+        #nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
 
-        # Ajouter les dettes à payer de l'agent x au résultat
-        result[x] = aPayer
+        # Dessiner le graphe
+        #plt.show()
 
-    return result
+        
+    # Initialisation des variables
+    montantTotal = 0
+    aPayer = []
+    Liste_dette = []
+
+    # Trier les noeuds selon le nombre de dettes décroissant
+    prio = sorted(G.successors(node), key=lambda x: G.out_degree(x), reverse=True)
+    print(prio)
+   
+
+    # Parcourir la liste triée
+    for x in prio:
+        if x in G.successors(node) :
+            pass    
+           
+
+    # Mettre à jour le capital de l'agent node
+    "G.nodes[node]['weight'] -= montantTotal"
+
+    # Ajouter les dettes à payer de l'agent node au résultat
+    return aPayer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def back_to_the_richest(G):
@@ -174,7 +213,7 @@ def back_to_the_richest(G):
 
         # Parcourir la liste triée
         for node in prio:
-            if node in G[x]:  # Vérifier si l'agent x doit de l'argent à l'agent node
+            if node in G.nodes[x]:  # Vérifier si l'agent x doit de l'argent à l'agent node
                 dette = G[x][node]['montant']  # Obtenir le montant de la dette
                 if montantTotal + dette < G.nodes[x]['capital']:
                     montantTotal += dette
