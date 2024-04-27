@@ -151,11 +151,11 @@ def powerOfFriendship(G, node):
 def Mister_big_heart(G,node):
     aPayer = []
     créanciers = []
-    capitalPrevionnel = calculDeficit(G)
+    capitalPrevisionnel = calculDeficit(G)
     for elt in G.successors(node):
-        for key in capitalPrevionnel.keys():
+        for key in capitalPrevisionnel.keys():
             if elt == key:
-                créanciers.append((key,capitalPrevionnel[key]))
+                créanciers.append((key,capitalPrevisionnel[key]))
     créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
     for elt in créanciers:
         for edge in G.out_edges(node,data=True):
@@ -165,6 +165,25 @@ def Mister_big_heart(G,node):
     return aPayer
 
 
+
+def The_Average_Joe(G, node):
+    aPayer = []
+    créanciers = []
+    CapitalPrevisionnel = detteMoyenne(G)
+    for elt in G.successors(node):
+        for key in CapitalPrevisionnel.keys():
+            if elt == key:
+                créanciers.append((key,CapitalPrevisionnel[key]))
+    créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
+    for elt in créanciers:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
+
+    return aPayer
+
+
+    
    
                                                          
     # TODO : add more strategies
