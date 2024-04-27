@@ -147,5 +147,8 @@ def heivyweightv2(G,node):
 def powerOfFriendship(G, node):
     out_edges = list(G.out_edges(node,data = True))
     friends                                                           
+    
+    
+    
     # TODO : add more strategies
 
