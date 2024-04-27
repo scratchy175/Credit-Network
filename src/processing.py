@@ -161,7 +161,7 @@ def Mister_big_heart(G,node):
         for edge in G.out_edges(node,data=True):
             if edge[1] == elt[0]:
                 aPayer.append(edge)
-
+  
     return aPayer
 
 
@@ -174,12 +174,13 @@ def The_Average_Joe(G, node):
         for key in CapitalPrevisionnel.keys():
             if elt == key:
                 créanciers.append((key,CapitalPrevisionnel[key]))
-    créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
+    créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
     for elt in créanciers:
         for edge in G.out_edges(node,data=True):
             if edge[1] == elt[0]:
                 aPayer.append(edge)
-
+    
+    print(aPayer)
     return aPayer
 
 
