@@ -1,5 +1,8 @@
 import random
 
+global friends
+friends = []
+
 def process_node_edges(G, node, accumulated_weights, strategy_func):
     edges_removed = False
     edges = strategy_func(G, node)
@@ -46,7 +49,7 @@ def calculDeficit(G):
     in_edges_sum = {node: sum(data['weight'] for _, _, data in G.in_edges(node, data=True)) for node in G.nodes()}
     out_edges_sum = {node: sum(data['weight'] for _, _, data in G.out_edges(node, data=True)) for node in G.nodes()}
     for node in G.nodes():
-        capital = 0 
+        capital = G.nodes[node]['weight']
         deficit = in_edges_sum.get(node, 0) + capital - out_edges_sum.get(node, 0)
         deficits[node] = deficit
     return deficits
@@ -132,4 +135,17 @@ def definitionPayeurs(G):
         random_assignment[random_key].append(node)
     return random_assignment
 
-# TODO : add more strategies
+
+def heivyweightv2(G,node):
+    out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
+    aPayer = []
+    for i in out_edges:
+        if i.data['weight'] < G.nodes[node]['weight']:
+            aPayer.append(i)
+    return aPayer
+    
+def powerOfFriendship(G, node):
+    out_edges = list(G.out_edges(node,data = True))
+    friends                                                           
+    # TODO : add more strategies
+

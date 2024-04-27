@@ -92,6 +92,7 @@ if __name__ == "__main__":
     if not os.path.exists(simulation_dir):
         os.makedirs(simulation_dir)
     G, filename = choose_graph()
+    friends = genereFriends(G)
     random_strat, strat_dict = random_strategies(G, simulation_dir)
     if not random_strat:
         strategy_func = choose_strategy()
