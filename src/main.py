@@ -92,7 +92,6 @@ if __name__ == "__main__":
     if not os.path.exists(simulation_dir):
         os.makedirs(simulation_dir)
     G, filename = choose_graph()
-    friends = genereFriends(G)
     random_strat, strat_dict = random_strategies(G, simulation_dir)
     if not random_strat:
         strategy_func = choose_strategy()
@@ -105,7 +104,6 @@ if __name__ == "__main__":
     for i in range(num_simulations):
         SG = copy.deepcopy(G)
         weights_func(SG, weight_multiplier*i if i > 0 else 1, total_weight)
-
         edges_removed = True
         while edges_removed:
             edges_removed = False

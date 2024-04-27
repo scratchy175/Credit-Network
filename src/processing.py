@@ -1,8 +1,5 @@
 import random
 
-global friends
-friends = []
-
 def process_node_edges(G, node, accumulated_weights, strategy_func):
     edges_removed = False
     edges = strategy_func(G, node)
@@ -144,11 +141,22 @@ def heivyweightv2(G,node):
         if float(i[2]['weight']) < capital:
             aPayer.append(i)
             capital -= i[2]['weight']
-        else: break      
+        else: break 
     return aPayer
     
 def powerOfFriendship(G, node):
+    friends = genereFriends(G)
     out_edges = list(G.out_edges(node,data = True))
-    friends                                                           
-    # TODO : add more strategies
+    amis = friends[node-1]
+    aVoir = []
+    aPayer = []
+    for i in out_edges:
+        aVoir.append((amis[i[1]-1],i))
+    aVoir = sorted(aVoir, key= lambda x : x[0])
+    for i in aVoir:
+        aPayer.append(i[1])
+    return aPayer
+                                                      
+
+
 
