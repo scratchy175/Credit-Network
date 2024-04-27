@@ -73,20 +73,25 @@ def directed_BA_model_in_degree_with_min_out_degree(N, m, seed=None):
         
         targets = np.random.choice(possible_targets, size=m-1, replace=False, p=probs_adjusted)
         for target in targets:
-            G.add_edge(target, new_node, weight= random.randint(min_weight,max_weight),date=random_date(min_date))
+            G.add_edge(target, new_node, weight=random.randint(min_weight,max_weight), date=random_date(min_date))
     
     return G
 
-def erdos_renyi_graph(n, p, seed=None):
+import random
+from datetime import datetime, timedelta
 
+def erdos_renyi_graph(n, p, seed=None):
     # Create an Erdős–Rényi graph (not a multigraph)
     G = nx.erdos_renyi_graph(n, p, directed=True, seed=seed)
 
-    # If you need to add multiple edges manually, you can do something like:
-    # for _ in range(100):  # Example: Attempt to add 100 edges randomly
-    #     u, v = random.sample(range(n), 2)
-    #     if random.random() < p:  # Use the same probability as before
-    #         MG.add_edge(u, v)
+    # Add date and weight attributes to edges
+    for u, v in G.edges():
+        # Generate random date
+
+        # Add date and weight attributes to edge
+        G[u][v]['date'] = random_date(min_date)
+        G[u][v]['weight'] = random.randint(min_weight, max_weight)
+
     return nx.MultiDiGraph(G)
 
 def create_new_graph():
