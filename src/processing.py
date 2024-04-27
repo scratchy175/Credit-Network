@@ -1,5 +1,8 @@
 import random
 
+global friends
+friends = []
+
 def process_node_edges(G, node, accumulated_weights, strategy_func):
     edges_removed = False
     edges = strategy_func(G, node)
@@ -46,7 +49,7 @@ def calculDeficit(G):
     in_edges_sum = {node: sum(data['weight'] for _, _, data in G.in_edges(node, data=True)) for node in G.nodes()}
     out_edges_sum = {node: sum(data['weight'] for _, _, data in G.out_edges(node, data=True)) for node in G.nodes()}
     for node in G.nodes():
-        capital = 0 
+        capital = G.nodes[node]['weight']
         deficit = in_edges_sum.get(node, 0) + capital - out_edges_sum.get(node, 0)
         deficits[node] = deficit
     return deficits
@@ -133,24 +136,35 @@ def definitionPayeurs(G):
     return random_assignment
 
 
-def mister_bigheart(agent_x, capitals, debts, deficits, G, node):
-
-    debts_with_deficits = list(zip(debts, deficits))   
-    debts_with_deficits.sort(key=lambda x: x[1], reverse=True)
-    debts_to_pay = []
-    total_amount_paid = 0
+def heivyweightv2(G,node):
+    out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
+    aPayer = []
+    for i in out_edges:
+        if i.data['weight'] < G.nodes[node]['weight']:
+            aPayer.append(i)
+    return aPayer
     
-    for debt, _ in debts_with_deficits:
-        if total_amount_paid + debt['amount'] <= capitals[agent_x]:
-            total_amount_paid += debt['amount']
-            debts_to_pay.append(debt)
-            debts.remove(debt)  
-    
-    capitals[agent_x] -= total_amount_paid
-    
-    # Renvoyer la liste des dettes payées
-    return debts_to_pay
+def powerOfFriendship(G, node):
+    out_edges = list(G.out_edges(node,data = True))
+    friends  
+
+def Mister_big_heart(G,node):
+    aPayer = []
+    créanciers = []
+    capitalPrevionnel = calculDeficit(G)
+    for elt in G.successors(node):
+        for key in capitalPrevionnel.keys():
+            if elt == key:
+                créanciers.append((key,capitalPrevionnel[key]))
+    créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
+    for elt in créanciers:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
+
+    return aPayer
 
 
-
-# TODO : add more strategies
+   
+                                                         
+    # TODO : add more strategies
