@@ -139,9 +139,12 @@ def definitionPayeurs(G):
 def heivyweightv2(G,node):
     out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
     aPayer = []
+    capital = G.nodes[node]['weight']
     for i in out_edges:
-        if i.data['weight'] < G.nodes[node]['weight']:
+        if float(i[2]['weight']) < capital:
             aPayer.append(i)
+            capital -= i[2]['weight']
+        else: break      
     return aPayer
     
 def powerOfFriendship(G, node):
