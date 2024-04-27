@@ -132,4 +132,25 @@ def definitionPayeurs(G):
         random_assignment[random_key].append(node)
     return random_assignment
 
+
+def mister_bigheart(agent_x, capitals, debts, deficits, G, node):
+
+    debts_with_deficits = list(zip(debts, deficits))   
+    debts_with_deficits.sort(key=lambda x: x[1], reverse=True)
+    debts_to_pay = []
+    total_amount_paid = 0
+    
+    for debt, _ in debts_with_deficits:
+        if total_amount_paid + debt['amount'] <= capitals[agent_x]:
+            total_amount_paid += debt['amount']
+            debts_to_pay.append(debt)
+            debts.remove(debt)  
+    
+    capitals[agent_x] -= total_amount_paid
+    
+    # Renvoyer la liste des dettes payées
+    return debts_to_pay
+
+
+
 # TODO : add more strategies
