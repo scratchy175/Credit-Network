@@ -142,88 +142,45 @@ def definitionPayeurs(G):
 
 def debt_runner(G, node):
 
-  
-    # dessin du graphe 
-    #with open("./graphs/graph_n5_e21_20240129_091000.gpickle", "rb") as f:
-        #G = pickle.load(f)
-
-        # Dessiner le graphe
-        #pos = nx.spring_layout(G)  # Calculer les positions des noeuds pour une belle visualisation
-        #nx.draw(G, pos, with_labels=True)
-
-        # Dessiner les poids des arcs
-        #edge_labels = nx.get_edge_attributes(G, 'weight')
-        #nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-
-        # Dessiner le graphe
-        #plt.show()
-
-        
+   # Print the type of the successors to verify it's an iterable
+    print(type(G.successors(node)))
+    print(list(G.successors(node)))
     # Initialisation des variables
-    montantTotal = 0
     aPayer = []
-    Liste_dette = []
-
     # Trier les noeuds selon le nombre de dettes décroissant
     prio = sorted(G.successors(node), key=lambda x: G.out_degree(x), reverse=True)
-    print(prio)
-   
 
-    # Parcourir la liste triée
-    for x in prio:
-        if x in G.successors(node) :
-            pass    
-           
+    for creancier in prio:
+       for creancier in prio:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == creancier:
+                aPayer.append(edge)
 
-    # Mettre à jour le capital de l'agent node
-    "G.nodes[node]['weight'] -= montantTotal"
+    return aPayer
 
-    # Ajouter les dettes à payer de l'agent node au résultat
+
+
+def back_to_the_richest(G, node):
+    print('Traitement du noeud : ',node)
+    # Initialisation de la liste des paiements
+    aPayer = []
+    creanciers = []
+    capital = calculDeficit(G)
+
+    for el in G.successors(node):
+        for keys in capital.keys():
+            if el ==keys :
+                creanciers.append((keys,capital[keys]))
+            
+        creanciers = sorted(creanciers, key=lambda x: x[1])
+    for elt in creanciers:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
+    print(aPayer)
     return aPayer
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def back_to_the_richest(G):
-    result = {}
-    for x in G.nodes():
-        # Initialisation des variables
-        montantTotal = 0
-        aPayer = []
-
-        # Trier les noeuds selon le montant total des dettes croissant
-        prio = sorted(G.nodes(), key=lambda node: G.nodes[node]['mtDettes'])
-
-        # Parcourir la liste triée
-        for node in prio:
-            if node in G.nodes[x]:  # Vérifier si l'agent x doit de l'argent à l'agent node
-                dette = G[x][node]['montant']  # Obtenir le montant de la dette
-                if montantTotal + dette < G.nodes[x]['capital']:
-                    montantTotal += dette
-                    aPayer.append((node, dette))  # Ajouter à la liste des dettes à payer
-                    G.remove_edge(x, node)  # Retirer la dette du graphe
-
-        # Mettre à jour le capital de l'agent x
-        G.nodes[x]['capital'] -= montantTotal
-
-        # Ajouter les dettes à payer de l'agent x au résultat
-        result[x] = aPayer
-
-    return result
+   

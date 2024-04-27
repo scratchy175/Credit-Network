@@ -7,7 +7,7 @@ import weights as weights
 import networkx as nx
 from processing import *
 from weights import *
-"from gen_graph import create_new_graph"
+from gen_graph import create_new_graph
 from graph_utils import load_graph
 from file_utils import list_graph_files
 
