@@ -1,4 +1,11 @@
 import random
+import pickle
+
+import networkx as nx
+import matplotlib.pyplot as plt
+
+global friends
+friends = []
 
 def process_node_edges(G, node, accumulated_weights, strategy_func):
     edges_removed = False
@@ -46,7 +53,7 @@ def calculDeficit(G):
     in_edges_sum = {node: sum(data['weight'] for _, _, data in G.in_edges(node, data=True)) for node in G.nodes()}
     out_edges_sum = {node: sum(data['weight'] for _, _, data in G.out_edges(node, data=True)) for node in G.nodes()}
     for node in G.nodes():
-        capital = 0 
+        capital = G.nodes[node]['weight']
         deficit = in_edges_sum.get(node, 0) + capital - out_edges_sum.get(node, 0)
         deficits[node] = deficit
     return deficits
@@ -80,6 +87,8 @@ def sommeDettes(G):
         else:
             outgoing_weights[node] = 0
     return outgoing_weights
+
+
 
 def poidTotal(G):
     total_weight = sum(data['weight'] for _, _, data in G.edges(data=True))
@@ -132,6 +141,7 @@ def definitionPayeurs(G):
         random_assignment[random_key].append(node)
     return random_assignment
 
+
 # TODO : add more strategies
 
 def argentPrete(G):
@@ -153,3 +163,131 @@ def bankBuster(G, listPret):
             if montantTotal + prio[i] < G.nodes[node]['weight']:
                 montantTotal = montantTotal - G.nodes[node]['weight']
                 aPayer.append
+
+
+
+def heivyweightv2(G,node):
+    out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
+    aPayer = []
+    for i in out_edges:
+        if i.data['weight'] < G.nodes[node]['weight']:
+            aPayer.append(i)
+    return aPayer
+    
+def powerOfFriendship(G, node):
+    out_edges = list(G.out_edges(node,data = True))
+    friends  
+
+def Mister_big_heart(G,node):
+    aPayer = []
+    créanciers = []
+    capitalPrevisionnel = calculDeficit(G)
+    for elt in G.successors(node):
+        for key in capitalPrevisionnel.keys():
+            if elt == key:
+                créanciers.append((key,capitalPrevisionnel[key]))
+    créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
+    for elt in créanciers:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
+
+
+
+def debt_runner(G, node):
+
+   # Print the type of the successors to verify it's an iterable
+    print(type(G.successors(node)))
+    print(list(G.successors(node)))
+    # Initialisation des variables
+    aPayer = []
+    # Trier les noeuds selon le nombre de dettes décroissant
+    prio = sorted(G.successors(node), key=lambda x: G.out_degree(x), reverse=True)
+
+    for creancier in prio:
+       for creancier in prio:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == creancier:
+                aPayer.append(edge)
+
+
+    return aPayer
+
+
+
+
+def The_Average_Joe(G, node):
+    aPayer = []
+    créanciers = []
+    CapitalPrevisionnel = detteMoyenne(G)
+    for elt in G.successors(node):
+        for key in CapitalPrevisionnel.keys():
+            if elt == key:
+                créanciers.append((key,CapitalPrevisionnel[key]))
+    créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
+    for elt in créanciers:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
+    
+
+def back_to_the_richest(G, node):
+    print('Traitement du noeud : ',node)
+    # Initialisation de la liste des paiements
+    aPayer = []
+    creanciers = []
+    capital = calculDeficit(G)
+
+    for el in G.successors(node):
+        for keys in capital.keys():
+            if el ==keys :
+                creanciers.append((keys,capital[keys]))
+            
+        creanciers = sorted(creanciers, key=lambda x: x[1])
+    for elt in creanciers:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
+
+    print(aPayer)
+    return aPayer
+
+
+
+   
+                                                         
+    # TODO : add more strategies
+
+
+
+   
+
+def heivyweightv2(G,node):
+    out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
+    aPayer = []
+    capital = G.nodes[node]['weight']
+    for i in out_edges:
+        if float(i[2]['weight']) < capital:
+            aPayer.append(i)
+            capital -= i[2]['weight']
+        else: break 
+    return aPayer
+    
+def powerOfFriendship(G, node):
+    friends = genereFriends(G)
+    out_edges = list(G.out_edges(node,data = True))
+    amis = friends[node-1]
+    aVoir = []
+    aPayer = []
+    for i in out_edges:
+        aVoir.append((amis[i[1]-1],i))
+    aVoir = sorted(aVoir, key= lambda x : x[0])
+    for i in aVoir:
+        aPayer.append(i[1])
+    return aPayer
+                                                      
+
+
+
+
+

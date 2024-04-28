@@ -104,7 +104,6 @@ if __name__ == "__main__":
     for i in range(num_simulations):
         SG = copy.deepcopy(G)
         weights_func(SG, weight_multiplier*i if i > 0 else 1, total_weight)
-
         edges_removed = True
         while edges_removed:
             edges_removed = False
