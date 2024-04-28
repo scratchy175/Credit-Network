@@ -3,6 +3,8 @@ import pickle
 
 import networkx as nx
 import matplotlib.pyplot as plt
+global beginningCapital
+beginningCapital = []
 
 global friends
 friends = []
@@ -142,28 +144,49 @@ def definitionPayeurs(G):
     return random_assignment
 
 
-# TODO : add more strategies
-
-def argentPrete(G):
-    argentPreteParAgent = []
-    for node in G.nodes:
-        argentPreteParAgent.append(node,G.nodes[node]['weight'])
-    return argentPreteParAgent
-
-def bankBuster(G, listPret):
-    pret = listPret.copy()
+def bankBuster (G,node):
+    # print('Traitement du noeud : ',node)
     aPayer = []
-    for node in G.nodes():
-        montantTotal = 0
-        nodeDette = []
-        for dette in G.out_edges(node, data=True):
-            nodeDette.append(dette,capitaldumecautoutdebut)
-        prio = sorted(pret, reverse=True)
-        for i in range(len(prio)):
-            if montantTotal + prio[i] < G.nodes[node]['weight']:
-                montantTotal = montantTotal - G.nodes[node]['weight']
-                aPayer.append
+    capital = beginningCapital.copy()
+    capitalv2 = []
+    # print('capital : ',capital)
+    for ele in G.successors(node):
+        # print(node, ele)
+        for tup in capital:
+            if tup[0] == ele:
+                capitalv2.append(tup)
+    sortedCapital = sorted(capitalv2, key=lambda x: x[1], reverse=True)
+    # print("capitalv2 : ", capitalv2)
+    # print("sortedCapital : ",sortedCapital)
+    for elt in sortedCapital:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
 
+    # Afficher les arêtes trouvées
+    return aPayer
+
+def bankWars (G,node):
+    # print('Traitement du noeud : ',node)
+    aPayer = []
+    capital = beginningCapital.copy()
+    capitalv2 = []
+    # print('capital : ',capital)
+    for ele in G.successors(node):
+        # print(node, ele)
+        for tup in capital:
+            if tup[0] == ele:
+                capitalv2.append(tup)
+    sortedCapital = sorted(capitalv2, key=lambda x: x[1])
+    # print("capitalv2 : ", capitalv2)
+    # print("sortedCapital : ",sortedCapital)
+    for elt in sortedCapital:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
+
+    # Afficher les arêtes trouvées
+    return aPayer
 
 
 def heivyweightv2(G,node):
@@ -192,7 +215,7 @@ def Mister_big_heart(G,node):
             if edge[1] == elt[0]:
                 aPayer.append(edge)
 
-
+    return aPayer
 
 def debt_runner(G, node):
 
@@ -229,7 +252,7 @@ def The_Average_Joe(G, node):
         for edge in G.out_edges(node,data=True):
             if edge[1] == elt[0]:
                 aPayer.append(edge)
-    
+    return aPayer 
 
 def back_to_the_richest(G, node):
     print('Traitement du noeud : ',node)
@@ -260,7 +283,6 @@ def back_to_the_richest(G, node):
 
 
 
-   
 
 def heivyweightv2(G,node):
     out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)

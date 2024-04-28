@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
+from processing import beginningCapital
 
 def plot_graph(data):
     """Plot a graph with number of bankruptcies on the x-axis and total_weight on the y-axis."""
@@ -105,6 +106,8 @@ if __name__ == "__main__":
         SG = copy.deepcopy(G)
         weights_func(SG, weight_multiplier*i if i > 0 else 1, total_weight)
         edges_removed = True
+        for node in SG.nodes(data=True):
+            beginningCapital.append((node[0],node[1]['weight']))
         while edges_removed:
             edges_removed = False
             accumulated_weights = {}
