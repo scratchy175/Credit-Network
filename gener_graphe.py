@@ -19,6 +19,17 @@ def nb_aretes(min, max):
         if (r.random() < proba**cpt) == False:
             aug = False
         cpt +=1
+        
+def nb_aretes(min, max):
+    cpt = 0
+    aug = True
+    proba = 0.99999
+    while True:
+        if cpt == max + 1 or aug != True:
+            return min + cpt
+        if (r.random() < proba**cpt) == False:
+            aug = False
+        cpt +=1
 
 def random_date(start_year):
     # Generate a date between January 1 of start_year and December 31 of end_year
