@@ -4,6 +4,9 @@ import pickle
 import networkx as nx
 import matplotlib.pyplot as plt
 
+global friends
+friends = []
+
 def process_node_edges(G, node, accumulated_weights, strategy_func):
     edges_removed = False
     edges = strategy_func(G, node)
@@ -140,6 +143,33 @@ def definitionPayeurs(G):
 
 
 
+def heivyweightv2(G,node):
+    out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
+    aPayer = []
+    for i in out_edges:
+        if i.data['weight'] < G.nodes[node]['weight']:
+            aPayer.append(i)
+    return aPayer
+    
+def powerOfFriendship(G, node):
+    out_edges = list(G.out_edges(node,data = True))
+    friends  
+
+def Mister_big_heart(G,node):
+    aPayer = []
+    créanciers = []
+    capitalPrevisionnel = calculDeficit(G)
+    for elt in G.successors(node):
+        for key in capitalPrevisionnel.keys():
+            if elt == key:
+                créanciers.append((key,capitalPrevisionnel[key]))
+    créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
+    for elt in créanciers:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
+
+
 
 def debt_runner(G, node):
 
@@ -157,9 +187,26 @@ def debt_runner(G, node):
             if edge[1] == creancier:
                 aPayer.append(edge)
 
+
     return aPayer
 
 
+
+
+def The_Average_Joe(G, node):
+    aPayer = []
+    créanciers = []
+    CapitalPrevisionnel = detteMoyenne(G)
+    for elt in G.successors(node):
+        for key in CapitalPrevisionnel.keys():
+            if elt == key:
+                créanciers.append((key,CapitalPrevisionnel[key]))
+    créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
+    for elt in créanciers:
+        for edge in G.out_edges(node,data=True):
+            if edge[1] == elt[0]:
+                aPayer.append(edge)
+    
 
 def back_to_the_richest(G, node):
     print('Traitement du noeud : ',node)
@@ -178,9 +225,15 @@ def back_to_the_richest(G, node):
         for edge in G.out_edges(node,data=True):
             if edge[1] == elt[0]:
                 aPayer.append(edge)
+
     print(aPayer)
     return aPayer
 
+
+
+   
+                                                         
+    # TODO : add more strategies
 
 
 
@@ -210,6 +263,7 @@ def powerOfFriendship(G, node):
         aPayer.append(i[1])
     return aPayer
                                                       
+
 
 
 
