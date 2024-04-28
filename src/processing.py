@@ -50,7 +50,7 @@ def calculDeficit(G):
     in_edges_sum = {node: sum(data['weight'] for _, _, data in G.in_edges(node, data=True)) for node in G.nodes()}
     out_edges_sum = {node: sum(data['weight'] for _, _, data in G.out_edges(node, data=True)) for node in G.nodes()}
     for node in G.nodes():
-        capital = 0 
+        capital = G.nodes[node]['weight']
         deficit = in_edges_sum.get(node, 0) + capital - out_edges_sum.get(node, 0)
         deficits[node] = deficit
     return deficits
@@ -140,6 +140,7 @@ def definitionPayeurs(G):
 
 
 
+
 def debt_runner(G, node):
 
    # Print the type of the successors to verify it's an iterable
@@ -184,3 +185,31 @@ def back_to_the_richest(G, node):
 
 
    
+
+def heivyweightv2(G,node):
+    out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
+    aPayer = []
+    capital = G.nodes[node]['weight']
+    for i in out_edges:
+        if float(i[2]['weight']) < capital:
+            aPayer.append(i)
+            capital -= i[2]['weight']
+        else: break 
+    return aPayer
+    
+def powerOfFriendship(G, node):
+    friends = genereFriends(G)
+    out_edges = list(G.out_edges(node,data = True))
+    amis = friends[node-1]
+    aVoir = []
+    aPayer = []
+    for i in out_edges:
+        aVoir.append((amis[i[1]-1],i))
+    aVoir = sorted(aVoir, key= lambda x : x[0])
+    for i in aVoir:
+        aPayer.append(i[1])
+    return aPayer
+                                                      
+
+
+
