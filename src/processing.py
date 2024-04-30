@@ -155,34 +155,33 @@ def powerOfFriendship(G, node):
     out_edges = list(G.out_edges(node,data = True))
     friends  
 
-
 def Mister_big_heart(G, node):
     aPayer = []
     créanciers = []
     capitalPrevisionnel = calculDeficit(G)
     
-    print("Capital prévisionnel:", capitalPrevisionnel)
+    print("Capital prévisionnel pour tous les noeuds:", capitalPrevisionnel)
     
     for elt in G.successors(node):
         for key in capitalPrevisionnel.keys():
             if elt == key:
                 créanciers.append((key, capitalPrevisionnel[key]))
-
-    print("Créanciers avant tri:", créanciers)
+                print(f"Ajout du créancier {key} avec un déficit de {capitalPrevisionnel[key]}")
     
+    print("Liste des créanciers avant tri:", créanciers)
     créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
+    print("Liste des créanciers après tri:", créanciers)
     
-    print("Créanciers après tri:", créanciers)
-    
-    for créancier in créanciers:
+    for elt in créanciers:
         for edge in G.out_edges(node, data=True):
-            if edge[1] == créancier[0]:
+            if edge[1] == elt[0]:
                 aPayer.append(edge)
+                print(f"Ajout de paiement: {node} paie {edge[1]} {edge[2]}")
     
-    print("Transactions à effectuer:", aPayer)
-    
+    print("Paiements à effectuer:", aPayer)
     return aPayer
 
+  
 
 
 def debt_runner(G, node):
@@ -212,26 +211,25 @@ def The_Average_Joe(G, node):
     créanciers = []
     CapitalPrevisionnel = detteMoyenne(G)
     
-    print("Dettes moyennes par nœud:", CapitalPrevisionnel)
+    print("Dette moyenne pour tous les noeuds:", CapitalPrevisionnel)
     
     for elt in G.successors(node):
         for key in CapitalPrevisionnel.keys():
             if elt == key:
                 créanciers.append((key, CapitalPrevisionnel[key]))
+                print(f"Ajout du créancier {key} avec une dette moyenne de {CapitalPrevisionnel[key]}")
     
-    print("Créanciers avant tri:", créanciers)
-    
+    print("Liste des créanciers avant tri:", créanciers)
     créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
+    print("Liste des créanciers après tri:", créanciers)
     
-    print("Créanciers après tri:", créanciers)
-    
-    for créancier in créanciers:
+    for elt in créanciers:
         for edge in G.out_edges(node, data=True):
-            if edge[1] == créancier[0]:
+            if edge[1] == elt[0]:
                 aPayer.append(edge)
+                print(f"Ajout de paiement: {node} paie {edge[1]} avec les détails {edge[2]}")
     
     print("Paiements à effectuer:", aPayer)
-    
     return aPayer
 
     
