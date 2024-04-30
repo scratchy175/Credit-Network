@@ -1,3 +1,4 @@
+from mimetypes import init
 import random
 
 
@@ -29,8 +30,6 @@ def goodman_show(G, multiplier, tot_weight):
     :param G: MultiDiGraph - Le graphe des dettes où les nœuds sont les agents
               et les arêtes contiennent les attributs des dettes.
     :param total_sum: int ou float - La somme totale que la banque peut prêter.
-    
-    :return: dict - Un dictionnaire avec les capitaux ajustés des agents.
     """
     total_sum = tot_weight * multiplier
     # Calculer la dette totale 
@@ -44,7 +43,7 @@ def goodman_show(G, multiplier, tot_weight):
         G.nodes[node]['weight'] = total_sum * percentage_of_total
 
 
-def goodman_show_v2(G, total_sum):
+def goodman_show_v2(G, multiplier, tot_weight):
     """
     Applique la version V2 de The Goodman Show sur un MultiDiGraph G où chaque
     arête représente une dette et le focus est mis sur le nombre de dettes.
@@ -55,6 +54,7 @@ def goodman_show_v2(G, total_sum):
     
     :return: dict - Un dictionnaire avec les capitaux ajustés des agents.
     """
+    total_sum = tot_weight * multiplier
     # Compter le nombre total de dettes
     nombre_total_dettes = sum(G.out_degree(node) for node in G.nodes())
     # Calculer la contribution de chaque agent au nombre total de dettes et ajuster leurs capitaux
@@ -64,7 +64,7 @@ def goodman_show_v2(G, total_sum):
         G.nodes[node]['weight'] = total_sum * percentage_of_total
 
 
-def divergent(G, initial_amount):
+def divergent(G, multiplier, tot_weight):
     """
     Applique la méthode de prêt "Divergent" sur un graphe G où chaque nœud contient le capital de l'agent à zéro initialement.
     Le graphe utilise les arêtes pour représenter les transactions (déficits et gains).
@@ -75,7 +75,7 @@ def divergent(G, initial_amount):
 
     :return: None - Modifie directement les capitaux dans le graphe.
     """
-
+    initial_amount = tot_weight * multiplier
     # Calcul des déficits pour chaque agent
     deficits = {node: 0 for node in G.nodes()}
     for node in G.nodes():
@@ -98,7 +98,7 @@ def divergent(G, initial_amount):
             G.nodes[node]['weight'] = G.nodes[node].get('weight', 0) + equal_share
 
 
-def the_godpayer(G, budget):
+def the_godpayer(G, multiplier, tot_weight):
     """
     Applique l'algorithme 'The GodPayer' sur un graphe G et la liste des capitaux des agents.
     
@@ -107,6 +107,7 @@ def the_godpayer(G, budget):
     
     :return: tuple - Tuple contenant la liste des capitaux ajustés et le dictionnaire des catégories.
     """
+    budget = tot_weight * multiplier
     # Calculer les déficits de chaque agent
     deficits = {}
     for node in G.nodes():
@@ -122,7 +123,7 @@ def the_godpayer(G, budget):
     for tuple in sorted_deficits:
         categorie = random.randint(1, 5)
         categories[categorie].append(tuple)
-    for i in range(1, 6):
+    for i in range(1, 4):
         for agent in categories[i]:
             if budget <= 0:
                 break
