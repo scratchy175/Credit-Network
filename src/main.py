@@ -60,6 +60,9 @@ def plot_graph_2(data):
     # Show the plot
     plt.show()
 
+    # Save the plot
+    plt.savefig(f"{simulation_dir}plot.png")
+
 
 
 
