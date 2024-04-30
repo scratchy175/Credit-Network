@@ -155,19 +155,33 @@ def powerOfFriendship(G, node):
     out_edges = list(G.out_edges(node,data = True))
     friends  
 
-def Mister_big_heart(G,node):
+
+def Mister_big_heart(G, node):
     aPayer = []
     créanciers = []
     capitalPrevisionnel = calculDeficit(G)
+    
+    print("Capital prévisionnel:", capitalPrevisionnel)
+    
     for elt in G.successors(node):
         for key in capitalPrevisionnel.keys():
             if elt == key:
-                créanciers.append((key,capitalPrevisionnel[key]))
+                créanciers.append((key, capitalPrevisionnel[key]))
+
+    print("Créanciers avant tri:", créanciers)
+    
     créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
-    for elt in créanciers:
-        for edge in G.out_edges(node,data=True):
-            if edge[1] == elt[0]:
+    
+    print("Créanciers après tri:", créanciers)
+    
+    for créancier in créanciers:
+        for edge in G.out_edges(node, data=True):
+            if edge[1] == créancier[0]:
                 aPayer.append(edge)
+    
+    print("Transactions à effectuer:", aPayer)
+    
+    return aPayer
 
 
 
@@ -197,15 +211,29 @@ def The_Average_Joe(G, node):
     aPayer = []
     créanciers = []
     CapitalPrevisionnel = detteMoyenne(G)
+    
+    print("Dettes moyennes par nœud:", CapitalPrevisionnel)
+    
     for elt in G.successors(node):
         for key in CapitalPrevisionnel.keys():
             if elt == key:
-                créanciers.append((key,CapitalPrevisionnel[key]))
+                créanciers.append((key, CapitalPrevisionnel[key]))
+    
+    print("Créanciers avant tri:", créanciers)
+    
     créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
-    for elt in créanciers:
-        for edge in G.out_edges(node,data=True):
-            if edge[1] == elt[0]:
+    
+    print("Créanciers après tri:", créanciers)
+    
+    for créancier in créanciers:
+        for edge in G.out_edges(node, data=True):
+            if edge[1] == créancier[0]:
                 aPayer.append(edge)
+    
+    print("Paiements à effectuer:", aPayer)
+    
+    return aPayer
+
     
 
 def back_to_the_richest(G, node):
