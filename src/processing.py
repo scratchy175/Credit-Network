@@ -186,20 +186,7 @@ def bankWars (G,node):
                 aPayer.append(edge)
 
     # Afficher les arêtes trouvées
-    return aPayer
-
-
-def heivyweightv2(G,node):
-    out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
-    aPayer = []
-    for i in out_edges:
-        if i.data['weight'] < G.nodes[node]['weight']:
-            aPayer.append(i)
-    return aPayer
-    
-def powerOfFriendship(G, node):
-    out_edges = list(G.out_edges(node,data = True))
-    friends  
+    return aPayer  
 
 def Mister_big_heart(G,node):
     aPayer = []
