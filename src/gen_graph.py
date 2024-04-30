@@ -116,7 +116,6 @@ def create_new_graph():
     else:
         print("Choix invalide.")
         sys.exit(1)
-
     num_nodes = G.number_of_nodes()
     num_edges = G.number_of_edges()
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
