@@ -49,13 +49,14 @@ def directed_BA_model_in_degree_with_min_out_degree(N, m, seed=None):
     
     # Start with an initial directed graph of m + 1 nodes, ensuring each has at least one out-degree
     G = nx.MultiDiGraph()
-    G.add_nodes_from(range(m + 1))
+    G.add_nodes_from(range(m + 1),weight=0)
     for i in range(m):
         G.add_edge(i, i + 1, weight= random.randint(min_weight, max_weight),date=random_date(min_date))  # Ensure initial nodes have at least one out-degree
     
     # Add the rest of the nodes, each with m edges
     for new_node in range(m + 1, N):
-        G.add_node(new_node)
+        G.add_node(new_node, weight=0)
+
         
         # Ensure at least one out-degree by selecting a random target for an outgoing link
         random_target = np.random.choice(list(G.nodes()))
@@ -73,20 +74,28 @@ def directed_BA_model_in_degree_with_min_out_degree(N, m, seed=None):
         
         targets = np.random.choice(possible_targets, size=m-1, replace=False, p=probs_adjusted)
         for target in targets:
-            G.add_edge(target, new_node, weight= random.randint(min_weight,max_weight),date=random_date(min_date))
+            G.add_edge(target, new_node, weight=random.randint(min_weight,max_weight), date=random_date(min_date))
     
     return G
 
-def erdos_renyi_graph(n, p, seed=None):
+import random
+from datetime import datetime, timedelta
 
+def erdos_renyi_graph(n, p, seed=None):
     # Create an Erdős–Rényi graph (not a multigraph)
     G = nx.erdos_renyi_graph(n, p, directed=True, seed=seed)
 
-    # If you need to add multiple edges manually, you can do something like:
-    # for _ in range(100):  # Example: Attempt to add 100 edges randomly
-    #     u, v = random.sample(range(n), 2)
-    #     if random.random() < p:  # Use the same probability as before
-    #         MG.add_edge(u, v)
+
+    for node in G.nodes():
+        G.nodes[node]['weight'] = 0
+    # Add date and weight attributes to edges
+    for u, v in G.edges():
+        # Generate random date
+
+        # Add date and weight attributes to edge
+        G[u][v]['date'] = random_date(min_date)
+        G[u][v]['weight'] = random.randint(min_weight, max_weight)
+
     return nx.MultiDiGraph(G)
 
 def create_new_graph():
@@ -111,7 +120,6 @@ def create_new_graph():
     else:
         print("Choix invalide.")
         sys.exit(1)
-
     num_nodes = G.number_of_nodes()
     num_edges = G.number_of_edges()
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")

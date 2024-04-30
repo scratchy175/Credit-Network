@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
+from processing import beginningCapital
 
 def plot_graph(data):
     """Plot a graph with number of bankruptcies on the x-axis and total_weight on the y-axis."""
@@ -59,6 +60,9 @@ def plot_graph_2(data):
     # Show the plot
     plt.show()
 
+    # Save the plot
+    plt.savefig(f"{simulation_dir}plot.png")
+
 
 
 
@@ -92,7 +96,6 @@ if __name__ == "__main__":
     if not os.path.exists(simulation_dir):
         os.makedirs(simulation_dir)
     G, filename = choose_graph()
-    friends = genereFriends(G)
     random_strat, strat_dict = random_strategies(G, simulation_dir)
     if not random_strat:
         strategy_func = choose_strategy()
@@ -105,8 +108,9 @@ if __name__ == "__main__":
     for i in range(num_simulations):
         SG = copy.deepcopy(G)
         weights_func(SG, weight_multiplier*i if i > 0 else 1, total_weight)
-
         edges_removed = True
+        for node in SG.nodes(data=True):
+            beginningCapital.append((node[0],node[1]['weight']))
         while edges_removed:
             edges_removed = False
             accumulated_weights = {}
