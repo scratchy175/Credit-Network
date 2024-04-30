@@ -201,7 +201,7 @@ def Mister_big_heart(G,node):
         for edge in G.out_edges(node,data=True):
             if edge[1] == elt[0]:
                 aPayer.append(edge)
-
+    print(aPayer)
     return aPayer
 
 def debt_runner(G, node):
@@ -230,16 +230,27 @@ def The_Average_Joe(G, node):
     aPayer = []
     créanciers = []
     CapitalPrevisionnel = detteMoyenne(G)
+    
+    print("Dette moyenne pour tous les noeuds:", CapitalPrevisionnel)
+    
     for elt in G.successors(node):
         for key in CapitalPrevisionnel.keys():
             if elt == key:
-                créanciers.append((key,CapitalPrevisionnel[key]))
+                créanciers.append((key, CapitalPrevisionnel[key]))
+                print(f"Ajout du créancier {key} avec une dette moyenne de {CapitalPrevisionnel[key]}")
+    
+    print("Liste des créanciers avant tri:", créanciers)
     créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
+    print("Liste des créanciers après tri:", créanciers)
+    
     for elt in créanciers:
-        for edge in G.out_edges(node,data=True):
+        for edge in G.out_edges(node, data=True):
             if edge[1] == elt[0]:
                 aPayer.append(edge)
-    return aPayer 
+                print(f"Ajout de paiement: {node} paie {edge[1]} avec les détails {edge[2]}")
+    
+    print("Paiements à effectuer:", aPayer)
+    return aPayer
 
 def back_to_the_richest(G, node):
     print('Traitement du noeud : ',node)
