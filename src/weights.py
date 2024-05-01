@@ -106,6 +106,7 @@ def the_godpayer(G, multiplier, tot_weight):
     
     :return: tuple - Tuple contenant la liste des capitaux ajustés et le dictionnaire des catégories.
     """
+    random.seed(42)
     budget = tot_weight * multiplier
     # Calculer les déficits de chaque agent
     deficits = {}

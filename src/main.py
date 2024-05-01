@@ -54,14 +54,15 @@ def plot_graph_2(data):
     plt.plot(x, y, marker='')
 
     # Label the axes
-    plt.xlabel('Nombre de faillites')
-    plt.ylabel('Poids total')
+    plt.xlabel('Somme totale')
+    plt.ylabel('Nombre de faillites')
 
     # Show the plot
-    plt.show()
+    #plt.show()
 
     # Save the plot
-    plt.savefig(f"{simulation_dir}plot.png")
+    plt.savefig(f"{simulation_dir}/plot.png")
+    plt.close()
 
 
 
@@ -93,23 +94,33 @@ def plot_graph_2(data):
 if __name__ == "__main__":
     timestamp = int(time.time())
     simulation_dir = f"simulations/{timestamp}"
+    G, filename = choose_graph()
+    if input("Do you want to load parameters from a file? (yes/no): ").lower().startswith('y'): #a voir a partir d'ou on peut charger les parametres
+        filename = input("Enter the name of the file: ")
+        #TODO : load parameters from file move to function
+        try:
+            with open(f"simulations/{filename}/parameters.json") as f: #or path to file
+                parameters = json.load(f)
+                strategy_func = getattr(processing, parameters["strategy_choice"])
+                weights_func = getattr(weights, parameters["weights_choice"])
+                num_simulations = parameters["num_simulations"]
+                weight_multiplier = parameters["weight_multiplier"]
+                total_weight = parameters["total_weight"]
+        except FileNotFoundError:
+            print("File not found.")
+    else:
+        strategy_func = choose_strategy()
+        weights_func = choose_weights_strategy()
+        total_weight = input_total_weight(G)
+        num_simulations, weight_multiplier = input_simulation_parameters()
     if not os.path.exists(simulation_dir):
         os.makedirs(simulation_dir)
-    G, filename = choose_graph()
-    #random_strat, strat_dict = random_strategies(G, simulation_dir)
-    #if not random_strat:
-    strategy_func = choose_strategy()
-    weights_func = choose_weights_strategy()
-    total_weight = input_total_weight(G)
-    num_simulations, weight_multiplier = input_simulation_parameters()
-
-    #save_parameters(simulation_dir, Path(str(filename)).stem, "all_random" if random_strat else strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
     save_parameters(simulation_dir, Path(str(filename)).stem, strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
 
     list_of_bankruptcies = []
     for i in range(num_simulations):
         SG = copy.deepcopy(G)
-        weights_func(SG, weight_multiplier*i if i > 0 else 1, total_weight)
+        weights_func(SG, weight_multiplier*i if i > 0 else 1, total_weight) #appliquer le multiplicateur ici calculer avant la dette totale et attribuer en fonction
         print("L'argent a été distribué.")
         edges_removed = True
         for node in SG.nodes(data=True):
@@ -119,8 +130,6 @@ if __name__ == "__main__":
             accumulated_weights = {}
 
             for node in SG.nodes():
-                """if random_strat and strat_dict is not None:
-                    strategy_func = strat_dict[node]"""
                 if process_node_edges(SG, node, accumulated_weights, strategy_func):
                     edges_removed = True
 
