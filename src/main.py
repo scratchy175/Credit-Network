@@ -21,8 +21,8 @@ def plot_graph(data):
     plt.plot(bankruptcies, total_weights, marker='o')
 
     # Label the axes
-    plt.xlabel('Poids total')
-    plt.ylabel('Nombre de faillites')
+    plt.xlabel('Nombre de faillites')
+    plt.ylabel('Somme totale')
 
     # Show the plot
     plt.show()
@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
             for node, weight in accumulated_weights.items():
                 SG.nodes[node]['weight'] += weight
-            print("Les dettes ont été payées.")
+            #print("Les dettes ont été payées.")
         true_Total_Weight = total_weight * (weight_multiplier * i if i > 0 else 1)
        
         print(f"Simulation {i+1} done.")
