@@ -1,1 +1,0 @@
-Simulation 1 : (Nombre de faillites : 4, Poids total : 100)

@@ -96,18 +96,21 @@ if __name__ == "__main__":
     if not os.path.exists(simulation_dir):
         os.makedirs(simulation_dir)
     G, filename = choose_graph()
-    random_strat, strat_dict = random_strategies(G, simulation_dir)
-    if not random_strat:
-        strategy_func = choose_strategy()
+    #random_strat, strat_dict = random_strategies(G, simulation_dir)
+    #if not random_strat:
+    strategy_func = choose_strategy()
     weights_func = choose_weights_strategy()
     total_weight = input_total_weight(G)
     num_simulations, weight_multiplier = input_simulation_parameters()
 
-    save_parameters(simulation_dir, Path(str(filename)).stem, "all_random" if random_strat else strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
+    #save_parameters(simulation_dir, Path(str(filename)).stem, "all_random" if random_strat else strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
+    save_parameters(simulation_dir, Path(str(filename)).stem, strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
+
     list_of_bankruptcies = []
     for i in range(num_simulations):
         SG = copy.deepcopy(G)
         weights_func(SG, weight_multiplier*i if i > 0 else 1, total_weight)
+        print("L'argent a été distribué.")
         edges_removed = True
         for node in SG.nodes(data=True):
             beginningCapital.append((node[0],node[1]['weight']))
@@ -116,14 +119,14 @@ if __name__ == "__main__":
             accumulated_weights = {}
 
             for node in SG.nodes():
-                if random_strat and strat_dict is not None:
-                    strategy_func = strat_dict[node]
+                """if random_strat and strat_dict is not None:
+                    strategy_func = strat_dict[node]"""
                 if process_node_edges(SG, node, accumulated_weights, strategy_func):
                     edges_removed = True
 
             for node, weight in accumulated_weights.items():
                 SG.nodes[node]['weight'] += weight
-
+            print("Les dettes ont été payées.")
         true_Total_Weight = total_weight * (weight_multiplier * i if i > 0 else 1)
        
         print(f"Simulation {i+1} done.")
