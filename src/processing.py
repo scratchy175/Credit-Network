@@ -116,7 +116,6 @@ def debt_runner(G, node):
     prio = sorted(G.successors(node), key=lambda x: G.out_degree(x), reverse=True)
 
     for creancier in prio:
-       for creancier in prio:
         for edge in G.out_edges(node,data=True):
             if edge[1] == creancier:
                 aPayer.append(edge)
