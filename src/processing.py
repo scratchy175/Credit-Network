@@ -129,7 +129,6 @@ def The_Average_Joe(G, node):
     créanciers = []
     CapitalPrevisionnel = detteMoyenne(G)
     
-    print("Dette moyenne pour tous les noeuds:", CapitalPrevisionnel)
     
     for elt in G.successors(node):
         for key in CapitalPrevisionnel.keys():
@@ -137,9 +136,7 @@ def The_Average_Joe(G, node):
                 créanciers.append((key, CapitalPrevisionnel[key]))
                 print(f"Ajout du créancier {key} avec une dette moyenne de {CapitalPrevisionnel[key]}")
     
-    print("Liste des créanciers avant tri:", créanciers)
     créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
-    print("Liste des créanciers après tri:", créanciers)
     
     for elt in créanciers:
         for edge in G.out_edges(node, data=True):
