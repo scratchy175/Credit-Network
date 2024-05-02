@@ -12,10 +12,17 @@ from graph_utils import load_graph
 from file_utils import list_graph_files
 
 def get_function_names(module, exclude_function=None):
+    # Default functions to exclude if none are provided
     if exclude_function is None:
-        exclude_function = ["process_node_edges","load_config"]
+        exclude_function = ["process_node_edges", "load_config"]
+    # Retrieve all function members from the given module
     functions = inspect.getmembers(module, inspect.isfunction)
-    return [func_name for func_name, _ in functions if func_name not in exclude_function]
+    # Filter out functions that are in the exclude list
+    return [
+        func_name for func_name, func in functions
+        if (func_name not in exclude_function and
+            func.__module__ == module.__name__)
+    ]
 
 def function_choice(module, display_message, input_message, error_message):
     function_names = get_function_names(module)

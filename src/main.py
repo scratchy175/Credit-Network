@@ -1,8 +1,6 @@
 import os
 from processing import process_node_edges
-from graph_utils import save_graph
 from file_utils import save_parameters
-from disp_graph import save_png
 from input_utils import *
 import copy
 import time
@@ -10,6 +8,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 from processing import beginningCapital
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
 
 def plot_graph(data):
     """Plot a graph with number of bankruptcies on the x-axis and total_weight on the y-axis."""
@@ -40,7 +40,7 @@ def save_bankruptcy_data(simulation_dir, simulation_num, SG, total_weight):
         txtfile.write(f"Simulation {simulation_num} : (Nombre de faillites : {bankruptcies}, Poids total : {total_weight})\n")
     return bankruptcies
 
-def plot_graph_2(data):
+def plot_graph_2(data, simulation_dir):
     """Plot a smooth graph with number of bankruptcies on the x-axis and total_weight on the y-axis."""
     # Unpack the data
     total_weights, bankruptcies = zip(*data)
@@ -64,82 +64,118 @@ def plot_graph_2(data):
     plt.savefig(f"{simulation_dir}/plot.png")
     plt.close()
 
+def setup_simulation():
+    strategy_func = strategy_var.get()
+    weights_func = weights_var.get()
+
+    selection = graph_var.get()
+    filename = selection
+    G = load_graph(os.path.join("graphs", filename))
+    # These functions are now selected from the combo boxes instead of via command line
+    strategy_function = getattr(processing, strategy_func)
+    weights_function = getattr(weights, weights_func)
+
+    run_simulation(G, filename, strategy_function, weights_function)
 
 
+def run_simulation(G, filename, strategy_func, weights_func):
+    
+        # Get inputs from GUI
+        num_simulations = int(num_simulations_entry.get())
+        weight_multiplier = float(weight_multiplier_entry.get())
+        total_weight = float(total_weight_entry.get())
+        timestamp = int(time.time())
+        simulation_dir = f"simulations/{timestamp}"
+        if not os.path.exists(simulation_dir):
+            os.makedirs(simulation_dir)
+        save_parameters(simulation_dir, Path(str(filename)).stem, strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
 
-# def save_detailed_node_data(simulation_dir, simulation_num, SG):
-#     """Save detailed node data including the sum of all node weights and each outgoing edge's weight."""
-#     filename = os.path.join(simulation_dir, f"detailed_node_data_simulation_{simulation_num}.csv")
+        list_of_bankruptcies = []
 
-#     with open(filename, 'w', newline='') as csvfile:
-#         fieldnames = ['node', 'node_weight', 'outgoing_edges', 'sum_out_edge_weights', 'out_edge_weights']
-#         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        
-#         writer.writeheader()
-#         for node in SG.nodes():
-#             node_weight = SG.nodes[node].get('weight', 0)
-#             out_edges = SG.out_edges(node, data=True)
-#             sum_out_edge_weights = sum(data['weight'] for _, _, data in out_edges)
-#             outgoing_edges = SG.out_degree(node)
-#             out_edge_weights = [data['weight'] for _, _, data in out_edges]
-#             writer.writerow({
-#                 'node': node, 
-#                 'node_weight': node_weight, 
-#                 'outgoing_edges': outgoing_edges, 
-#                 'sum_out_edge_weights': sum_out_edge_weights,
-#                 'out_edge_weights': out_edge_weights
-#             })
+        progress_bar['maximum'] = num_simulations
+        try:
+            for i in range(num_simulations):
+                SG = copy.deepcopy(G)
+                
+                weights_func(SG, total_weight)
+                print("L'argent a été distribué.")
+                edges_removed = True
+                for node in SG.nodes(data=True):
+                    beginningCapital.append((node[0],node[1]['weight']))
+                while edges_removed:
+                    edges_removed = False
+                    accumulated_weights = {}
+
+                    for node in SG.nodes():
+                        if process_node_edges(SG, node, accumulated_weights, strategy_func):
+                            edges_removed = True
+
+                    for node, weight in accumulated_weights.items():
+                        SG.nodes[node]['weight'] += weight
+                
+                progress_bar['value'] = i + 1
+                root.update_idletasks()
+            
+                print(f"Simulation {i+1} terminée.")
+                list_of_bankruptcies.append((save_bankruptcy_data(simulation_dir, i+1, SG, total_weight),total_weight))
+                total_weight = total_weight * weight_multiplier
+            print("Toutes les simulations sont terminées.")
+            print(list_of_bankruptcies)
+            plot_graph_2(list_of_bankruptcies, simulation_dir)
+            messagebox.showinfo("Simulation terminée", f"Les résultats de la simulation ont été enregistrés dans le dossier {simulation_dir}.")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {str(e)}")
+
 
 
 if __name__ == "__main__":
-    timestamp = int(time.time())
-    simulation_dir = f"simulations/{timestamp}"
-    G, filename = choose_graph()
-    if input("Do you want to load parameters from a file? (yes/no): ").lower().startswith('y'): #a voir a partir d'ou on peut charger les parametres
-        filename = input("Enter the name of the file: ")
-        #TODO : load parameters from file move to function
-        try:
-            with open(f"simulations/{filename}/parameters.json") as f: #or path to file
-                parameters = json.load(f)
-                strategy_func = getattr(processing, parameters["strategy_choice"])
-                weights_func = getattr(weights, parameters["weights_choice"])
-                num_simulations = parameters["num_simulations"]
-                weight_multiplier = parameters["weight_multiplier"]
-                total_weight = parameters["total_weight"]
-        except FileNotFoundError:
-            print("File not found.")
-    else:
-        strategy_func = choose_strategy()
-        weights_func = choose_weights_strategy()
-        total_weight = input_total_weight(G)
-        num_simulations, weight_multiplier = input_simulation_parameters()
-    if not os.path.exists(simulation_dir):
-        os.makedirs(simulation_dir)
-    save_parameters(simulation_dir, Path(str(filename)).stem, strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
+    
 
-    list_of_bankruptcies = []
-    for i in range(num_simulations):
-        SG = copy.deepcopy(G)
-        weights_func(SG, weight_multiplier*i if i > 0 else 1, total_weight) #appliquer le multiplicateur ici calculer avant la dette totale et attribuer en fonction
-        print("L'argent a été distribué.")
-        edges_removed = True
-        for node in SG.nodes(data=True):
-            beginningCapital.append((node[0],node[1]['weight']))
-        while edges_removed:
-            edges_removed = False
-            accumulated_weights = {}
+    # Main window setup
+    root = tk.Tk()
+    root.title("Configuration de la simulation")
 
-            for node in SG.nodes():
-                if process_node_edges(SG, node, accumulated_weights, strategy_func):
-                    edges_removed = True
+    # Widgets for inputs
+    tk.Label(root, text="Nombre de simulations:").grid(row=0, column=0)
+    num_simulations_entry = tk.Entry(root)
+    num_simulations_entry.insert(0, "20")  # Default value set here
+    num_simulations_entry.grid(row=0, column=1)
 
-            for node, weight in accumulated_weights.items():
-                SG.nodes[node]['weight'] += weight
-            #print("Les dettes ont été payées.")
-        true_Total_Weight = total_weight * (weight_multiplier * i if i > 0 else 1)
-       
-        print(f"Simulation {i+1} done.")
-        list_of_bankruptcies.append((save_bankruptcy_data(simulation_dir, i+1, SG, true_Total_Weight),true_Total_Weight))
-    print("All simulations done.")
-    print(list_of_bankruptcies)
-    plot_graph_2(list_of_bankruptcies)
+    tk.Label(root, text="Multiplicateur:").grid(row=1, column=0)
+    weight_multiplier_entry = tk.Entry(root)
+    weight_multiplier_entry.insert(0, "2")  # Default value set here
+    weight_multiplier_entry.grid(row=1, column=1)
+
+    tk.Label(root, text="Somme totale:").grid(row=2, column=0)
+    total_weight_entry = tk.Entry(root)
+    total_weight_entry.insert(0, "1000000")  # Default value set here
+    total_weight_entry.grid(row=2, column=1)
+
+    # Graph selection setup
+    graph_options = list_graph_files()
+    graph_var = ttk.Combobox(root, values=graph_options)
+    graph_var.grid(row=3, column=1)
+    tk.Label(root, text="Graphe:").grid(row=3, column=0)
+
+
+    # Strategy selection
+    strategy_var = ttk.Combobox(root, values=get_function_names(processing))
+    strategy_var.grid(row=4, column=1)
+    tk.Label(root, text="Stratégie de paiement:").grid(row=4, column=0)
+
+    # Weights strategy selection
+    weights_var = ttk.Combobox(root, values=get_function_names(weights))
+    weights_var.grid(row=5, column=1)
+    tk.Label(root, text="Stratégie de prêt:").grid(row=5, column=0)
+
+
+    # Progress Bar
+    progress_bar = ttk.Progressbar(root, orient="horizontal", length=300, mode="determinate")
+    progress_bar.grid(row=6, columnspan=2, pady=10)
+
+    # Run button
+    run_button = tk.Button(root, text="Lancer la simulation", command=setup_simulation)
+    run_button.grid(row=7, columnspan=2)
+
+    # Start the GUI event loop
+    root.mainloop()
