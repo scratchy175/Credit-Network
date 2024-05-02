@@ -102,7 +102,7 @@ def Mister_big_heart(G,node):
         for edge in G.out_edges(node,data=True):
             if edge[1] == elt[0]:
                 aPayer.append(edge)
-    #print(aPayer)
+    print(aPayer)
     return aPayer
 
 def debt_runner(G, node):
@@ -137,7 +137,7 @@ def The_Average_Joe(G, node):
         for key in CapitalPrevisionnel.keys():
             if elt == key:
                 créanciers.append((key, CapitalPrevisionnel[key]))
-                print(f"Ajout du créancier {key} avec une dette moyenne de {CapitalPrevisionnel[key]}")
+               # print(f"Ajout du créancier {key} avec une dette moyenne de {CapitalPrevisionnel[key]}")
     
     créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
     
@@ -145,7 +145,7 @@ def The_Average_Joe(G, node):
         for edge in G.out_edges(node, data=True):
             if edge[1] == elt[0]:
                 aPayer.append(edge)
-                print(f"Ajout de paiement: {node} paie {edge[1]} avec les détails {edge[2]}")
+                #print(f"Ajout de paiement: {node} paie {edge[1]} avec les détails {edge[2]}")
     
     print("Paiements à effectuer:", aPayer)
     return aPayer
