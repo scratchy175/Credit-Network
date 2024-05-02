@@ -96,20 +96,27 @@ def run_simulation(G, filename, strategy_func, weights_func):
         try:
             for i in range(num_simulations):
                 SG = copy.deepcopy(G)
-                
+
+                # Distribution de l'argent
                 weights_func(SG, total_weight)
                 print("L'argent a été distribué.")
                 edges_removed = True
                 for node in SG.nodes(data=True):
                     beginningCapital.append((node[0],node[1]['weight']))
+
+                # Traitement des dettes
+                # Tant que des dettes sont remboursées, on continue
+                # un tour de boucle = un paiement de dettes = 1 top
                 while edges_removed:
                     edges_removed = False
                     accumulated_weights = {}
 
+                    # On traite les dettes de chaque noeud
                     for node in SG.nodes():
                         if process_node_edges(SG, node, accumulated_weights, strategy_func):
                             edges_removed = True
 
+                    # On ajoute les montants remboursés aux noeuds
                     for node, weight in accumulated_weights.items():
                         SG.nodes[node]['weight'] += weight
                 
@@ -122,7 +129,7 @@ def run_simulation(G, filename, strategy_func, weights_func):
             print("Toutes les simulations sont terminées.")
             print(list_of_bankruptcies)
             plot_graph_2(list_of_bankruptcies, simulation_dir)
-            messagebox.showinfo("Simulation terminée", f"Les résultats de la simulation ont été enregistrés dans le dossier {simulation_dir}.")
+            messagebox.showinfo("Simulation terminées", f"Les résultats des simulations ont été enregistrés dans le dossier {simulation_dir}.")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
@@ -148,6 +155,7 @@ if __name__ == "__main__":
 
     tk.Label(root, text="Somme totale:").grid(row=2, column=0)
     total_weight_entry = tk.Entry(root)
+    # il faudrait que la somme totale soit égale à la somme des poids des arêtes ou des noeuds ? ou une partie
     total_weight_entry.insert(0, "1000000")  # Default value set here
     total_weight_entry.grid(row=2, column=1)
 
