@@ -10,6 +10,15 @@ beginningCapital = []
 global friends
 friends = []
 
+"""
+Permet de traiter(payer les dettes) un noeud selon une stratégie donnée
+:param G: le graphe
+:param node: le noeud à traiter
+:param accumulated_weights: les poids accumulés
+:param strategy_func: liste/ordre des arêtes à traiter pour le noeud donné selon une stratégie donnée
+
+:return: False si aucun paiement n'a été effectué durant le tour, True sinon
+"""
 def process_node_edges(G, node, accumulated_weights, strategy_func):
     edges_removed = False
     edges = strategy_func(G, node)
@@ -34,12 +43,6 @@ def highest_weight_first(G, node):
 
 def lowest_weight_first(G, node):
     return sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'))
-
-def random_strategy(G, node):
-    print("random")
-    return random.shuffle(list(G.out_edges(node, data=True))) #pas bon ca 
-
-
 
 
 def bankBuster (G,node):
