@@ -19,7 +19,7 @@ def pickletolist(pickle_file):
         file.close()
 
 # Utilisation de la fonction pour charger une liste depuis un fichier Pickle
-ten = pickletolist("friends_data_10000.pickle")
+# ten = pickletolist("friends_data_10000.pickle")
 #seven = pickletolist("friends_data_7500.pickle")
 #five = pickletolist("friends_data_5000.pickle")
 seven=[]

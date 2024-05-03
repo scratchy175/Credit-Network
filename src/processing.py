@@ -48,22 +48,21 @@ def lowest_weight_first(G, node):
 def bankBuster (G,node):
     # print('Traitement du noeud : ',node)
     aPayer = []
-    capital = beginningCapital.copy()
     capitalv2 = []
     # print('capital : ',capital)
     for ele in G.successors(node):
         # print(node, ele)
-        for tup in capital:
+        for tup in beginningCapital:
             if tup[0] == ele:
                 capitalv2.append(tup)
     sortedCapital = sorted(capitalv2, key=lambda x: x[1], reverse=True)
     # print("capitalv2 : ", capitalv2)
-    print("sortedCapital : ",sortedCapital, node)
+    # print("sortedCapital : ",sortedCapital, node)
     for elt in sortedCapital:
         for edge in G.out_edges(node,data=True):
-            print(edge ,node, "arrete", elt)
+            # print(edge ,node, "arrete", elt)
             if edge[1] == elt[0]:
-                print(edge , node, "arrete validée")
+                # print(edge , node, "arrete validée")
                 aPayer.append(edge)
 
     # Afficher les arêtes trouvées
