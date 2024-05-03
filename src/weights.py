@@ -106,8 +106,8 @@ def the_godpayer(G, tot_weight):
     # Calculer les déficits de chaque agent
     deficits = {}
     for node in G.nodes():
-        creances = sum(data['weight'] for _, _, data in G.out_edges(node, data=True))
-        dettes = sum(data['weight'] for _, _, data in G.in_edges(node, data=True))
+        dettes = sum(data['weight'] for _, _, data in G.out_edges(node, data=True))
+        creances = sum(data['weight'] for _, _, data in G.in_edges(node, data=True))
         deficits[node] = creances - dettes
     
     # Trier les agents selon leur déficit croissant

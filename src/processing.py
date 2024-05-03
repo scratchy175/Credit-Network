@@ -58,10 +58,12 @@ def bankBuster (G,node):
                 capitalv2.append(tup)
     sortedCapital = sorted(capitalv2, key=lambda x: x[1], reverse=True)
     # print("capitalv2 : ", capitalv2)
-    # print("sortedCapital : ",sortedCapital)
+    print("sortedCapital : ",sortedCapital, node)
     for elt in sortedCapital:
         for edge in G.out_edges(node,data=True):
+            print(edge ,node, "arrete", elt)
             if edge[1] == elt[0]:
+                print(edge , node, "arrete validée")
                 aPayer.append(edge)
 
     # Afficher les arêtes trouvées

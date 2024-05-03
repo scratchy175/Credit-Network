@@ -103,6 +103,9 @@ def run_simulation(G, filename, strategy_func, weights_func):
                 edges_removed = True
                 for node in SG.nodes(data=True):
                     beginningCapital.append((node[0],node[1]['weight']))
+                
+                for edge in SG.out_edges(data = True):
+                    print(edge)
 
                 # Traitement des dettes
                 # Tant que des dettes sont remboursées, on continue
