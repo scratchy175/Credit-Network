@@ -1,15 +1,41 @@
 import random
+import pickle
+from random import shuffle
 
-def genereFriends(G):
-    nbNoeuds = G.number_of_nodes()
-    AGENTS = list(range(1, nbNoeuds + 1)) 
-    list_of_lists = []
-    for i in range(1, nbNoeuds + 1):
-        Li = []  
-        random.shuffle(AGENTS) 
-        Li.extend(AGENTS) 
-        list_of_lists.append(Li)  
-    return list_of_lists
+def pickletolist(pickle_file):
+    # Charger la liste de listes depuis le fichier Pickle
+    try:
+        with open(pickle_file, "rb") as file:
+            friends_list = pickle.load(file)
+    except FileNotFoundError:
+        print(f"Le fichier {pickle_file} n'existe pas.")
+        return None
+    except Exception as e:
+        print(f"Une erreur s'est produite lors du chargement du fichier {pickle_file}: {e}")
+        return None
+    else:
+        return friends_list
+    finally:
+        file.close()
+
+# Utilisation de la fonction pour charger une liste depuis un fichier Pickle
+ten = pickletolist("friends_data_10000.pickle")
+#seven = pickletolist("friends_data_7500.pickle")
+#five = pickletolist("friends_data_5000.pickle")
+seven=[]
+five=[]
+
+def definit_amis(n):
+    if n ==  10000:
+        return ten
+    if n == 7500:
+        return seven
+    if n == 5000:
+        return five
+    else : 
+        liste = [ i for i in range(n)]
+        liste = liste.shuffle()
+        return liste
 
 def calculDeficit(G):
     deficits = {}  

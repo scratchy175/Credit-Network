@@ -125,9 +125,6 @@ def debt_runner(G, node):
 
     return aPayer
 
-
-
-
 def The_Average_Joe(G, node):
     aPayer = []
     créanciers = []
@@ -184,20 +181,13 @@ def heivyweightv2(G,node):
     return aPayer
     
 def powerOfFriendship(G, node):
-    friends = genereFriends(G)
     out_edges = list(G.out_edges(node,data = True))
-    amis = friends[node-1]
+    amis = definit_amis(G.number_of_nodes())
     aVoir = []
     aPayer = []
-    for i in out_edges:
-        aVoir.append((amis[i[1]-1],i))
+    for i in range(len(out_edges)):
+        aVoir.append((amis[i],out_edges[i]))
     aVoir = sorted(aVoir, key= lambda x : x[0])
     for i in aVoir:
         aPayer.append(i[1])
     return aPayer
-                                                      
-
-
-
-
-
