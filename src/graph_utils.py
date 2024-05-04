@@ -1,6 +1,10 @@
 import os
 import pickle
 
+from process_algo import calculDeficit, detteMoyenne, generate_friends_for_each_node
+
+import processing
+
 def save_graph(G, filename):
     """
     Sauvegarde un graphe dans un fichier.
@@ -31,4 +35,7 @@ def load_graph(filename):
     else:
         print(f"Aucun fichier trouvé à : {filename}")
         exit(1)
+
+
+
 

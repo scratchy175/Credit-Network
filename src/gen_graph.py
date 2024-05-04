@@ -253,35 +253,6 @@ def create_new_graph():
     return G, filename
 
 
-def generate_friends_for_each_node(G):
-    """
-    Generates a randomized list of friends for each node in the graph.
-    This assumes that all nodes can potentially be friends with any other node.
-    Excludes the node itself from its list of friends.
-    
-    Parameters:
-    - G: The graph object
-
-    Returns:
-    A dictionary where keys are nodes and values are lists of friends (other nodes).
-    """
-    friends_dict = {}
-    nodes_list = list(G.nodes())
-    
-    for node in nodes_list:
-        # Create a copy of the node list and remove the current node to avoid self-friendship
-        possible_friends = nodes_list.copy()
-        possible_friends.remove(node)
-        
-        # Shuffle the list to randomize friend connections
-        random.shuffle(possible_friends)
-        
-        # You can also limit the number of friends each node can have by slicing the list
-        # For example, `[:10]` would give each node 10 friends at most
-        friends_dict[node] = possible_friends
-
-    return friends_dict
-
 
 def has_multiple_directed_edges(G):
     """

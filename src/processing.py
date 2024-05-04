@@ -3,12 +3,19 @@ import pickle
 
 import networkx as nx
 import matplotlib.pyplot as plt
-from process_algo import *
+
 global beginningCapital
 beginningCapital = {}
 
-global friends
+global friends, CapitalPrevisionnel
 friends = []
+
+global capital
+capital = {}
+
+global detteMoy
+detteMoy = {}
+
 
 """
 Permet de traiter(payer les dettes) un noeud selon une stratégie donnée
@@ -55,10 +62,7 @@ def bankWars(G, node):
     # Utiliser un générateur pour parcourir les arêtes sortantes du nœud
     outgoing_edges = (edge for edge in G.out_edges(node, data=True) if edge[1] in successors)
 
-    # Filtrer les arêtes sortantes en fonction des successeurs triés
-    aPayer = [edge for edge in outgoing_edges if edge[1] in sorted_successors]
-
-    return aPayer
+    return [edge for edge in outgoing_edges if edge[1] in sorted_successors]
 
 def bankBuster(G, node):
     # Créer un ensemble des successeurs du nœud
@@ -70,65 +74,26 @@ def bankBuster(G, node):
     # Utiliser un générateur pour parcourir les arêtes sortantes du nœud
     outgoing_edges = (edge for edge in G.out_edges(node, data=True) if edge[1] in successors)
 
-    # Filtrer les arêtes sortantes en fonction des successeurs triés
-    aPayer = [edge for edge in outgoing_edges if edge[1] in sorted_successors]
+    return [edge for edge in outgoing_edges if edge[1] in sorted_successors]
 
-    return aPayer
-
-"""def Mister_big_heart(G, node):
-   
-    capitalPrevisionnel = calculDeficit(G)
-    
-    
-    créanciers = {succ: capitalPrevisionnel[succ] for succ in G.successors(node) if succ in capitalPrevisionnel}
-    créanciers_tries = sorted(créanciers.items(), key=lambda item: item[1], reverse=True)
-    aPayer = []
-    out_edges = list(G.out_edges(node, data=True))
-    
-    
-    créanciers_set = set(créanciers.keys())
-    
-    for edge in out_edges:
-        if edge[1] in créanciers_set:
-            aPayer.append(edge)
-
-    print(aPayer)
-    return aPayer"""
 
 
 def Mister_big_heart(G, node):
-    capitalPrevisionnel = calculDeficit(G)
-    
+    capitalPrevisionnel = capital
+
     créanciers = sorted(
         ((succ, capitalPrevisionnel[succ]) for succ in G.successors(node) if succ in capitalPrevisionnel),
         key=lambda x: x[1],
         reverse=True
     )
 
-    aPayer = [
-        edge for edge in G.out_edges(node, data=True)
+    return [
+        edge
+        for edge in G.out_edges(node, data=True)
         if edge[1] in {cr[0] for cr in créanciers}
     ]
 
-    return aPayer
 
-
-"""def Mister_big_heart(G, node, capitalPrevisionnel):
-    aPayer = []
-    créanciers = []
-    # Créer un dictionnaire des arêtes sortantes pour un accès rapide
-    out_edges_dict = {edge[1]: edge for edge in G.out_edges(node, data=True)}
-
-    for elt in G.successors(node):
-        if elt in capitalPrevisionnel:
-            créanciers.append((elt, capitalPrevisionnel[elt]))
-    créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
-    
-    for elt in créanciers:
-        if elt[0] in out_edges_dict:
-            aPayer.append(out_edges_dict[elt[0]])
-
-    return aPayer"""
 
 def debt_runner(G, node):
 
@@ -141,55 +106,41 @@ def debt_runner(G, node):
     prio = sorted(G.successors(node), key=lambda x: G.out_degree(x), reverse=True)
 
     for creancier in prio:
-        for edge in G.out_edges(node,data=True):
-            if edge[1] == creancier:
-                aPayer.append(edge)
-
-
+        aPayer.extend(
+            edge
+            for edge in G.out_edges(node, data=True)
+            if edge[1] == creancier
+        )
     return aPayer
 
 def The_Average_Joe(G, node):
-    aPayer = []
-    créanciers = []
-    CapitalPrevisionnel = detteMoyenne(G)
-    
-    
-    for elt in G.successors(node):
-        for key in CapitalPrevisionnel.keys():
-            if elt == key:
-                créanciers.append((key, CapitalPrevisionnel[key]))
-               # print(f"Ajout du créancier {key} avec une dette moyenne de {CapitalPrevisionnel[key]}")
-    
-    créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
-    
-    for elt in créanciers:
-        for edge in G.out_edges(node, data=True):
-            if edge[1] == elt[0]:
-                aPayer.append(edge)
-                #print(f"Ajout de paiement: {node} paie {edge[1]} avec les détails {edge[2]}")
-    
-    print("Paiements à effectuer:", aPayer)
-    return aPayer
+   
+    CapitalPrevisionnel = detteMoy
 
-def back_to_the_richest(G, node):
-    #print('Traitement du noeud : ',node)
-    # Initialisation de la liste des paiements
-    aPayer = []
-    creanciers = []
-    capital = calculDeficit(G)
 
-    for el in G.successors(node):
-        for keys in capital.keys():
-            if el ==keys :
-                creanciers.append((keys,capital[keys]))
+    créanciers = sorted(
+        [(succ, CapitalPrevisionnel[succ]) for succ in G.successors(node) if succ in CapitalPrevisionnel],
+        key=lambda x: x[1] if x[1] is not None else float('-inf'),
+        reverse=True
+    )
+    return [
+        edge
+        for elt in créanciers
+        for edge in G.out_edges(node, data=True)
+        if edge[1] == elt[0]
+    ]
 
-        creanciers = sorted(creanciers, key=lambda x: x[1])
-    for elt in creanciers:
-        aPayer.extend(
-            edge for edge in G.out_edges(node, data=True) if edge[1] == elt[0]
-        )
-    #print(aPayer)
-    return aPayer
+
+def back_to_the_richest(G, n):
+    # Calculer la "richesse" de chaque nœud en tant que créancier
+    # La richesse est définie comme la somme des dettes qu'ils possèdent, soit le poids total des arêtes entrantes
+    creditor_wealth = capital
+    # Obtenir toutes les arêtes sortantes du nœud 'n'
+    # Chaque arête est un tuple (n, creditor, data) où 'data' contient les détails de l'arête, y compris le montant de la dette
+    outgoing_edges = list(G.out_edges(n, data=True))
+    return sorted(
+        outgoing_edges, key=lambda edge: creditor_wealth[edge[1]], reverse=True
+    )
 
 
 def heivyweightv2(G,node):
@@ -205,12 +156,6 @@ def heivyweightv2(G,node):
     
 def powerOfFriendship(G, node):
     out_edges = list(G.out_edges(node,data = True))
-    amis = definit_amis(G.number_of_nodes())
-    aVoir = []
-    aPayer = []
-    for i in range(len(out_edges)):
-        aVoir.append((amis[i],out_edges[i]))
+    aVoir = [(friends[i], out_edges[i]) for i in range(len(out_edges))]
     aVoir = sorted(aVoir, key= lambda x : x[0])
-    for i in aVoir:
-        aPayer.append(i[1])
-    return aPayer
+    return [i[1] for i in aVoir]
