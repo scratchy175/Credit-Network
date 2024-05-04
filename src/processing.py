@@ -5,7 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from process_algo import *
 global beginningCapital
-beginningCapital = []
+beginningCapital = {}
 
 global friends
 friends = []
@@ -68,27 +68,42 @@ def bankBuster (G,node):
     # Afficher les arêtes trouvées
     return aPayer
 
-def bankWars (G,node):
-    # print('Traitement du noeud : ',node)
-    aPayer = []
-    capital = beginningCapital.copy()
-    capitalv2 = []
-    # print('capital : ',capital)
-    for ele in G.successors(node):
-        # print(node, ele)
-        for tup in capital:
-            if tup[0] == ele:
-                capitalv2.append(tup)
-    sortedCapital = sorted(capitalv2, key=lambda x: x[1])
-    # print("capitalv2 : ", capitalv2)
-    # print("sortedCapital : ",sortedCapital)
-    for elt in sortedCapital:
-        for edge in G.out_edges(node,data=True):
-            if edge[1] == elt[0]:
-                aPayer.append(edge)
+# def bankWars (G,node):
+#     # print('Traitement du noeud : ',node)
+#     aPayer = []
+#     capital = beginningCapital.copy()
+#     capitalv2 = []
+#     # print('capital : ',capital)
+#     for ele in G.successors(node):
+#         # print(node, ele)
+#         for tup in capital:
+#             if tup[0] == ele:
+#                 capitalv2.append(tup)
+#     sortedCapital = sorted(capitalv2, key=lambda x: x[1])
+#     # print("capitalv2 : ", capitalv2)
+#     # print("sortedCapital : ",sortedCapital)
+#     for elt in sortedCapital:
+#         for edge in G.out_edges(node,data=True):
+#             if edge[1] == elt[0]:
+#                 aPayer.append(edge)
 
-    # Afficher les arêtes trouvées
-    return aPayer  
+#     # Afficher les arêtes trouvées
+#     return aPayer  
+
+def bankBuster(G, node):
+    # Créer un ensemble des successeurs du nœud
+    successors = set(G.successors(node))
+
+    # Trier les successeurs selon le capital initial reçu de la banque
+    sorted_successors = sorted(successors, key=lambda x: beginningCapital.get(x, 0), reverse=True)
+
+    # Utiliser un générateur pour parcourir les arêtes sortantes du nœud
+    outgoing_edges = (edge for edge in G.out_edges(node, data=True) if edge[1] in successors)
+
+    # Filtrer les arêtes sortantes en fonction des successeurs triés
+    aPayer = [edge for edge in outgoing_edges if edge[1] in sorted_successors]
+
+    return aPayer
 
 def Mister_big_heart(G,node):
     aPayer = []
