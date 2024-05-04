@@ -5,7 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from process_algo import *
 global beginningCapital
-beginningCapital = []
+beginningCapital = {}
 
 global friends
 friends = []
@@ -48,48 +48,62 @@ def lowest_weight_first(G, node):
 def bankBuster (G,node):
     # print('Traitement du noeud : ',node)
     aPayer = []
-    capital = beginningCapital.copy()
     capitalv2 = []
     # print('capital : ',capital)
     for ele in G.successors(node):
         # print(node, ele)
-        for tup in capital:
+        for tup in beginningCapital:
             if tup[0] == ele:
                 capitalv2.append(tup)
     sortedCapital = sorted(capitalv2, key=lambda x: x[1], reverse=True)
     # print("capitalv2 : ", capitalv2)
-    print("sortedCapital : ",sortedCapital, node)
+    # print("sortedCapital : ",sortedCapital, node)
     for elt in sortedCapital:
         for edge in G.out_edges(node,data=True):
-            print(edge ,node, "arrete", elt)
+            # print(edge ,node, "arrete", elt)
             if edge[1] == elt[0]:
-                print(edge , node, "arrete validée")
+                # print(edge , node, "arrete validée")
                 aPayer.append(edge)
 
     # Afficher les arêtes trouvées
     return aPayer
 
-def bankWars (G,node):
-    # print('Traitement du noeud : ',node)
-    aPayer = []
-    capital = beginningCapital.copy()
-    capitalv2 = []
-    # print('capital : ',capital)
-    for ele in G.successors(node):
-        # print(node, ele)
-        for tup in capital:
-            if tup[0] == ele:
-                capitalv2.append(tup)
-    sortedCapital = sorted(capitalv2, key=lambda x: x[1])
-    # print("capitalv2 : ", capitalv2)
-    # print("sortedCapital : ",sortedCapital)
-    for elt in sortedCapital:
-        for edge in G.out_edges(node,data=True):
-            if edge[1] == elt[0]:
-                aPayer.append(edge)
+# def bankWars (G,node):
+#     # print('Traitement du noeud : ',node)
+#     aPayer = []
+#     capital = beginningCapital.copy()
+#     capitalv2 = []
+#     # print('capital : ',capital)
+#     for ele in G.successors(node):
+#         # print(node, ele)
+#         for tup in capital:
+#             if tup[0] == ele:
+#                 capitalv2.append(tup)
+#     sortedCapital = sorted(capitalv2, key=lambda x: x[1])
+#     # print("capitalv2 : ", capitalv2)
+#     # print("sortedCapital : ",sortedCapital)
+#     for elt in sortedCapital:
+#         for edge in G.out_edges(node,data=True):
+#             if edge[1] == elt[0]:
+#                 aPayer.append(edge)
 
-    # Afficher les arêtes trouvées
-    return aPayer  
+#     # Afficher les arêtes trouvées
+#     return aPayer  
+
+def bankBuster(G, node):
+    # Créer un ensemble des successeurs du nœud
+    successors = set(G.successors(node))
+
+    # Trier les successeurs selon le capital initial reçu de la banque
+    sorted_successors = sorted(successors, key=lambda x: beginningCapital.get(x, 0), reverse=True)
+
+    # Utiliser un générateur pour parcourir les arêtes sortantes du nœud
+    outgoing_edges = (edge for edge in G.out_edges(node, data=True) if edge[1] in successors)
+
+    # Filtrer les arêtes sortantes en fonction des successeurs triés
+    aPayer = [edge for edge in outgoing_edges if edge[1] in sorted_successors]
+
+    return aPayer
 
 """def Mister_big_heart(G, node):
    
@@ -164,9 +178,6 @@ def debt_runner(G, node):
 
     return aPayer
 
-
-
-
 def The_Average_Joe(G, node):
     aPayer = []
     créanciers = []
@@ -223,20 +234,13 @@ def heivyweightv2(G,node):
     return aPayer
     
 def powerOfFriendship(G, node):
-    friends = genereFriends(G)
     out_edges = list(G.out_edges(node,data = True))
-    amis = friends[node-1]
+    amis = definit_amis(G.number_of_nodes())
     aVoir = []
     aPayer = []
-    for i in out_edges:
-        aVoir.append((amis[i[1]-1],i))
+    for i in range(len(out_edges)):
+        aVoir.append((amis[i],out_edges[i]))
     aVoir = sorted(aVoir, key= lambda x : x[0])
     for i in aVoir:
         aPayer.append(i[1])
     return aPayer
-                                                      
-
-
-
-
-

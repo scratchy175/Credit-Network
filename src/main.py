@@ -99,13 +99,13 @@ def run_simulation(G, filename, strategy_func, weights_func):
 
                 # Distribution de l'argent
                 weights_func(SG, total_weight)
-                print("L'argent a été distribué.")
+                print("L'argent a été distribué.", i+1)
                 edges_removed = True
                 for node in SG.nodes(data=True):
-                    beginningCapital.append((node[0],node[1]['weight']))
+                    beginningCapital[node[0]] = node[1]['weight']
                 
-                for edge in SG.out_edges(data = True):
-                    print(edge)
+                # for edge in SG.out_edges(data = True):
+                #     print(edge)
 
                 # Traitement des dettes
                 # Tant que des dettes sont remboursées, on continue
@@ -125,7 +125,7 @@ def run_simulation(G, filename, strategy_func, weights_func):
                 
                 progress_bar['value'] = i + 1
                 root.update_idletasks()
-            
+                beginningCapital.clear()
                 print(f"Simulation {i+1} terminée.")
                 list_of_bankruptcies.append((save_bankruptcy_data(simulation_dir, i+1, SG, total_weight),total_weight))
                 total_weight = total_weight * weight_multiplier

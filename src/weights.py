@@ -74,8 +74,8 @@ def divergent(G, tot_weight):
     # Calcul des déficits pour chaque agent
     deficits = {node: 0 for node in G.nodes()}
     for node in G.nodes():
-        creances = sum(data['weight'] for _, _, data in G.out_edges(node, data=True))
-        dettes = sum(data['weight'] for _, _, data in G.in_edges(node, data=True))
+        dettes = sum(data['weight'] for _, _, data in G.out_edges(node, data=True))
+        creances = sum(data['weight'] for _, _, data in G.in_edges(node, data=True))
         deficit = creances - dettes
         deficits[node] = deficit
     # Couvrir les déficits si négatifs
