@@ -11,6 +11,28 @@ from processing import beginningCapital
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
+from process_algo import calculDeficit, detteMoyenne, generate_friends_for_each_node
+
+def manage_pre_algo(filename):
+    with open(filename, 'rb') as f:
+        G = pickle.load(f)
+    print(f"Graphe chargé à partir de : {filename}")
+    # Check for related files
+    graph_name = os.path.splitext(filename)[0]
+    related_files = [f'{graph_name}_genereFriends.pickle', f'{graph_name}_calculDeficit.pickle', f'{graph_name}_calculDetteMoyenne.pickle']
+    for related_file in related_files:
+        if os.path.exists(related_file):
+                with open(related_file, 'rb') as f:
+                    processing.friends = pickle.load(f)
+            
+        else:
+            print(f"No related file found for {related_file}.")
+            processing.friends = generate_friends_for_each_node(G)
+            with open(related_file, 'wb') as f:
+                pickle.dump(processing.friends, f)
+            
+    return G
+
 def plot_graph(data):
     """Plot a graph with number of bankruptcies on the x-axis and total_weight on the y-axis."""
     # Unpack the data
@@ -91,50 +113,50 @@ def run_simulation(G, filename, strategy_func, weights_func):
         save_parameters(simulation_dir, Path(str(filename)).stem, strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
 
         list_of_bankruptcies = []
-
+        if strategy_func.__name__ == "powerOfFriendship":
+            manage_pre_algo(os.path.join("graphs", filename))
         progress_bar['maximum'] = num_simulations
-        try:
-            for i in range(num_simulations):
-                SG = copy.deepcopy(G)
+        for i in range(num_simulations):
+            SG = copy.deepcopy(G)
 
-                # Distribution de l'argent
-                weights_func(SG, total_weight)
-                print("L'argent a été distribué.", i+1)
-                edges_removed = True
-                for node in SG.nodes(data=True):
-                    beginningCapital[node[0]] = node[1]['weight']
-                
-                # for edge in SG.out_edges(data = True):
-                #     print(edge)
+            # Distribution de l'argent
+            weights_func(SG, total_weight)
+            print("L'argent a été distribué.", i+1)
+            edges_removed = True
+            for node in SG.nodes(data=True):
+                beginningCapital[node[0]] = node[1]['weight']
+            processing.capital = calculDeficit(SG)
+            processing.detteMoy = detteMoyenne(SG)
+            # for edge in SG.out_edges(data = True):
+            #     print(edge)
 
-                # Traitement des dettes
-                # Tant que des dettes sont remboursées, on continue
-                # un tour de boucle = un paiement de dettes = 1 top
-                while edges_removed:
-                    edges_removed = False
-                    accumulated_weights = {}
+            # Traitement des dettes
+            # Tant que des dettes sont remboursées, on continue
+            # un tour de boucle = un paiement de dettes = 1 top
+            while edges_removed:
+                edges_removed = False
+                accumulated_weights = {}
 
-                    # On traite les dettes de chaque noeud
-                    for node in SG.nodes():
-                        if process_node_edges(SG, node, accumulated_weights, strategy_func):
-                            edges_removed = True
+                # On traite les dettes de chaque noeud
+                for node in SG.nodes():
+                    if process_node_edges(SG, node, accumulated_weights, strategy_func):
+                        edges_removed = True
 
-                    # On ajoute les montants remboursés aux noeuds
-                    for node, weight in accumulated_weights.items():
-                        SG.nodes[node]['weight'] += weight
-                
-                progress_bar['value'] = i + 1
-                root.update_idletasks()
-                beginningCapital.clear()
-                print(f"Simulation {i+1} terminée.")
-                list_of_bankruptcies.append((save_bankruptcy_data(simulation_dir, i+1, SG, total_weight),total_weight))
-                total_weight = total_weight * weight_multiplier
-            print("Toutes les simulations sont terminées.")
-            print(list_of_bankruptcies)
-            plot_graph_2(list_of_bankruptcies, simulation_dir)
-            messagebox.showinfo("Simulation terminées", f"Les résultats des simulations ont été enregistrés dans le dossier {simulation_dir}.")
-        except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {str(e)}")
+                # On ajoute les montants remboursés aux noeuds
+                for node, weight in accumulated_weights.items():
+                    SG.nodes[node]['weight'] += weight
+            
+            progress_bar['value'] = i + 1
+            root.update_idletasks()
+            beginningCapital.clear()
+            print(f"Simulation {i+1} terminée.")
+            list_of_bankruptcies.append((save_bankruptcy_data(simulation_dir, i+1, SG, total_weight),total_weight))
+            total_weight = total_weight * weight_multiplier
+        print("Toutes les simulations sont terminées.")
+        print(list_of_bankruptcies)
+        plot_graph_2(list_of_bankruptcies, simulation_dir)
+        messagebox.showinfo("Simulation terminées", f"Les résultats des simulations ont été enregistrés dans le dossier {simulation_dir}.")
+    
 
 
 

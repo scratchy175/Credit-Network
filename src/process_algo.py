@@ -2,6 +2,36 @@ import random
 import pickle
 from random import shuffle
 
+
+def generate_friends_for_each_node(G):
+    """
+    Generates a randomized list of friends for each node in the graph.
+    This assumes that all nodes can potentially be friends with any other node.
+    Excludes the node itself from its list of friends.
+    
+    Parameters:
+    - G: The graph object
+
+    Returns:
+    A dictionary where keys are nodes and values are lists of friends (other nodes).
+    """
+    friends_dict = {}
+    nodes_list = list(G.nodes())
+    
+    for node in nodes_list:
+        # Create a copy of the node list and remove the current node to avoid self-friendship
+        possible_friends = nodes_list.copy()
+        possible_friends.remove(node)
+        
+        # Shuffle the list to randomize friend connections
+        random.shuffle(possible_friends)
+        
+        # You can also limit the number of friends each node can have by slicing the list
+        # For example, `[:10]` would give each node 10 friends at most
+        friends_dict[node] = possible_friends
+
+    return friends_dict
+
 def pickletolist(pickle_file):
     # Charger la liste de listes depuis le fichier Pickle
     try:
@@ -38,7 +68,7 @@ def definit_amis(n):
         return liste
 
 def calculDeficit(G):
-    deficits = {}  
+    deficits = {}
     in_edges_sum = {node: sum(data['weight'] for _, _, data in G.in_edges(node, data=True)) for node in G.nodes()}
     out_edges_sum = {node: sum(data['weight'] for _, _, data in G.out_edges(node, data=True)) for node in G.nodes()}
     for node in G.nodes():
@@ -50,10 +80,9 @@ def calculDeficit(G):
 
 
 def detteMoyenne(G):
-    average_debts = {} 
+    average_debts = {}
     for node in G.nodes():
-        out_edges = list(G.out_edges(node, data=True))
-        if out_edges:
+        if out_edges := list(G.out_edges(node, data=True)):
             out_edges_sum = sum(data['weight'] for _, _, data in out_edges)
             num_out_edges = len(out_edges)
             average_debt = out_edges_sum / num_out_edges
