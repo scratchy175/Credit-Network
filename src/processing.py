@@ -45,50 +45,20 @@ def lowest_weight_first(G, node):
     return sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'))
 
 
-def bankBuster (G,node):
-    # print('Traitement du noeud : ',node)
-    aPayer = []
-    capitalv2 = []
-    # print('capital : ',capital)
-    for ele in G.successors(node):
-        # print(node, ele)
-        for tup in beginningCapital:
-            if tup[0] == ele:
-                capitalv2.append(tup)
-    sortedCapital = sorted(capitalv2, key=lambda x: x[1], reverse=True)
-    # print("capitalv2 : ", capitalv2)
-    # print("sortedCapital : ",sortedCapital, node)
-    for elt in sortedCapital:
-        for edge in G.out_edges(node,data=True):
-            # print(edge ,node, "arrete", elt)
-            if edge[1] == elt[0]:
-                # print(edge , node, "arrete validée")
-                aPayer.append(edge)
+def bankWars(G, node):
+    # Créer un ensemble des successeurs du nœud
+    successors = set(G.successors(node))
 
-    # Afficher les arêtes trouvées
+    # Trier les successeurs selon le capital initial reçu de la banque
+    sorted_successors = sorted(successors, key=lambda x: beginningCapital.get(x, 0))
+
+    # Utiliser un générateur pour parcourir les arêtes sortantes du nœud
+    outgoing_edges = (edge for edge in G.out_edges(node, data=True) if edge[1] in successors)
+
+    # Filtrer les arêtes sortantes en fonction des successeurs triés
+    aPayer = [edge for edge in outgoing_edges if edge[1] in sorted_successors]
+
     return aPayer
-
-# def bankWars (G,node):
-#     # print('Traitement du noeud : ',node)
-#     aPayer = []
-#     capital = beginningCapital.copy()
-#     capitalv2 = []
-#     # print('capital : ',capital)
-#     for ele in G.successors(node):
-#         # print(node, ele)
-#         for tup in capital:
-#             if tup[0] == ele:
-#                 capitalv2.append(tup)
-#     sortedCapital = sorted(capitalv2, key=lambda x: x[1])
-#     # print("capitalv2 : ", capitalv2)
-#     # print("sortedCapital : ",sortedCapital)
-#     for elt in sortedCapital:
-#         for edge in G.out_edges(node,data=True):
-#             if edge[1] == elt[0]:
-#                 aPayer.append(edge)
-
-#     # Afficher les arêtes trouvées
-#     return aPayer  
 
 def bankBuster(G, node):
     # Créer un ensemble des successeurs du nœud
@@ -105,21 +75,60 @@ def bankBuster(G, node):
 
     return aPayer
 
-def Mister_big_heart(G,node):
+"""def Mister_big_heart(G, node):
+   
+    capitalPrevisionnel = calculDeficit(G)
+    
+    
+    créanciers = {succ: capitalPrevisionnel[succ] for succ in G.successors(node) if succ in capitalPrevisionnel}
+    créanciers_tries = sorted(créanciers.items(), key=lambda item: item[1], reverse=True)
+    aPayer = []
+    out_edges = list(G.out_edges(node, data=True))
+    
+    
+    créanciers_set = set(créanciers.keys())
+    
+    for edge in out_edges:
+        if edge[1] in créanciers_set:
+            aPayer.append(edge)
+
+    print(aPayer)
+    return aPayer"""
+
+
+def Mister_big_heart(G, node):
+    capitalPrevisionnel = calculDeficit(G)
+    
+    créanciers = sorted(
+        ((succ, capitalPrevisionnel[succ]) for succ in G.successors(node) if succ in capitalPrevisionnel),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    aPayer = [
+        edge for edge in G.out_edges(node, data=True)
+        if edge[1] in {cr[0] for cr in créanciers}
+    ]
+
+    return aPayer
+
+
+"""def Mister_big_heart(G, node, capitalPrevisionnel):
     aPayer = []
     créanciers = []
-    capitalPrevisionnel = calculDeficit(G)
+    # Créer un dictionnaire des arêtes sortantes pour un accès rapide
+    out_edges_dict = {edge[1]: edge for edge in G.out_edges(node, data=True)}
+
     for elt in G.successors(node):
-        for key in capitalPrevisionnel.keys():
-            if elt == key:
-                créanciers.append((key,capitalPrevisionnel[key]))
+        if elt in capitalPrevisionnel:
+            créanciers.append((elt, capitalPrevisionnel[elt]))
     créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
+    
     for elt in créanciers:
-        for edge in G.out_edges(node,data=True):
-            if edge[1] == elt[0]:
-                aPayer.append(edge)
-    print(aPayer)
-    return aPayer
+        if elt[0] in out_edges_dict:
+            aPayer.append(out_edges_dict[elt[0]])
+
+    return aPayer"""
 
 def debt_runner(G, node):
 
