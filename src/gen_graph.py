@@ -119,7 +119,7 @@ def directed_BA_model_in_degree_with_min_out_degree2(N, m, min_weight=1, max_wei
     
     return G
 
-def erdos_renyi_multigraph2(n, p, seed=None, min_weight=1, max_weight=10):
+def erdos_renyi_multigraph2(n, p, seed=None):
     """
     Generate an Erdős-Rényi directed multigraph where multiple edges are possible
     between any pair of nodes.
@@ -157,7 +157,7 @@ def erdos_renyi_multigraph2(n, p, seed=None, min_weight=1, max_weight=10):
 
     return G
 
-def erdos_renyi_multigraph(n, p, seed=None, max_edges=3, min_weight=1, max_weight=10):
+def erdos_renyi_multigraph(n, p, seed=None, max_edges=3):
     """
     Generate an Erdős-Rényi directed multigraph where the number of edges between any pair of nodes
     is randomly determined up to a maximum number.
@@ -239,7 +239,7 @@ def create_new_graph():
     elif choice == "2":
         num_nodes = int(input("Nombre de noeuds : "))
         p = float(input("Probabilité d'ajouter une arête : "))
-        G = create_erdos_renyi_multidigraph(num_nodes, p)
+        G = erdos_renyi_multigraph2(num_nodes, p, seed=None)
         type_graph = f"ER_p{p}"
     else:
         print("Choix invalide.")
@@ -329,17 +329,17 @@ if __name__ == "__main__":
     plt.title("Out-Degree Distribution")
     plt.show()
 
-    #print(f"Diameter of the graph: {nx.diameter(G)}")
+    print(f"Diameter of the graph: {nx.diameter(G)}")
 
     # FAIRE UN TRUC AVEC LA SEED
 
 
     #from graph_utils import load_graph
     #G = load_graph("graphs/ER_p0.02_n100_e201_20240503_230337.gpickle")
-    print(G.edges())
+    # print(G.edges())
     # print out degrees
-    for node in G.nodes():
-        print(f"Node {node} has out-degree {G.out_degree(node)}")
+    # for node in G.nodes():
+    #     print(f"Node {node} has out-degree {G.out_degree(node)}")
 
     """for node in G.nodes():
         print(f"Node {node} has out-degree {G.in_degree(node)}")"""

@@ -45,50 +45,20 @@ def lowest_weight_first(G, node):
     return sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'))
 
 
-def bankBuster (G,node):
-    # print('Traitement du noeud : ',node)
-    aPayer = []
-    capitalv2 = []
-    # print('capital : ',capital)
-    for ele in G.successors(node):
-        # print(node, ele)
-        for tup in beginningCapital:
-            if tup[0] == ele:
-                capitalv2.append(tup)
-    sortedCapital = sorted(capitalv2, key=lambda x: x[1], reverse=True)
-    # print("capitalv2 : ", capitalv2)
-    # print("sortedCapital : ",sortedCapital, node)
-    for elt in sortedCapital:
-        for edge in G.out_edges(node,data=True):
-            # print(edge ,node, "arrete", elt)
-            if edge[1] == elt[0]:
-                # print(edge , node, "arrete validée")
-                aPayer.append(edge)
+def bankWars(G, node):
+    # Créer un ensemble des successeurs du nœud
+    successors = set(G.successors(node))
 
-    # Afficher les arêtes trouvées
+    # Trier les successeurs selon le capital initial reçu de la banque
+    sorted_successors = sorted(successors, key=lambda x: beginningCapital.get(x, 0))
+
+    # Utiliser un générateur pour parcourir les arêtes sortantes du nœud
+    outgoing_edges = (edge for edge in G.out_edges(node, data=True) if edge[1] in successors)
+
+    # Filtrer les arêtes sortantes en fonction des successeurs triés
+    aPayer = [edge for edge in outgoing_edges if edge[1] in sorted_successors]
+
     return aPayer
-
-# def bankWars (G,node):
-#     # print('Traitement du noeud : ',node)
-#     aPayer = []
-#     capital = beginningCapital.copy()
-#     capitalv2 = []
-#     # print('capital : ',capital)
-#     for ele in G.successors(node):
-#         # print(node, ele)
-#         for tup in capital:
-#             if tup[0] == ele:
-#                 capitalv2.append(tup)
-#     sortedCapital = sorted(capitalv2, key=lambda x: x[1])
-#     # print("capitalv2 : ", capitalv2)
-#     # print("sortedCapital : ",sortedCapital)
-#     for elt in sortedCapital:
-#         for edge in G.out_edges(node,data=True):
-#             if edge[1] == elt[0]:
-#                 aPayer.append(edge)
-
-#     # Afficher les arêtes trouvées
-#     return aPayer  
 
 def bankBuster(G, node):
     # Créer un ensemble des successeurs du nœud
