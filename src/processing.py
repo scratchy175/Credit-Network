@@ -91,21 +91,60 @@ def bankWars (G,node):
     # Afficher les arêtes trouvées
     return aPayer  
 
-def Mister_big_heart(G,node):
+"""def Mister_big_heart(G, node):
+   
+    capitalPrevisionnel = calculDeficit(G)
+    
+    
+    créanciers = {succ: capitalPrevisionnel[succ] for succ in G.successors(node) if succ in capitalPrevisionnel}
+    créanciers_tries = sorted(créanciers.items(), key=lambda item: item[1], reverse=True)
+    aPayer = []
+    out_edges = list(G.out_edges(node, data=True))
+    
+    
+    créanciers_set = set(créanciers.keys())
+    
+    for edge in out_edges:
+        if edge[1] in créanciers_set:
+            aPayer.append(edge)
+
+    print(aPayer)
+    return aPayer"""
+
+
+def Mister_big_heart(G, node):
+    capitalPrevisionnel = calculDeficit(G)
+    
+    créanciers = sorted(
+        ((succ, capitalPrevisionnel[succ]) for succ in G.successors(node) if succ in capitalPrevisionnel),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    aPayer = [
+        edge for edge in G.out_edges(node, data=True)
+        if edge[1] in {cr[0] for cr in créanciers}
+    ]
+
+    return aPayer
+
+
+"""def Mister_big_heart(G, node, capitalPrevisionnel):
     aPayer = []
     créanciers = []
-    capitalPrevisionnel = calculDeficit(G)
+    # Créer un dictionnaire des arêtes sortantes pour un accès rapide
+    out_edges_dict = {edge[1]: edge for edge in G.out_edges(node, data=True)}
+
     for elt in G.successors(node):
-        for key in capitalPrevisionnel.keys():
-            if elt == key:
-                créanciers.append((key,capitalPrevisionnel[key]))
+        if elt in capitalPrevisionnel:
+            créanciers.append((elt, capitalPrevisionnel[elt]))
     créanciers = sorted(créanciers, key=lambda x: x[1], reverse=True)
+    
     for elt in créanciers:
-        for edge in G.out_edges(node,data=True):
-            if edge[1] == elt[0]:
-                aPayer.append(edge)
-    print(aPayer)
-    return aPayer
+        if elt[0] in out_edges_dict:
+            aPayer.append(out_edges_dict[elt[0]])
+
+    return aPayer"""
 
 def debt_runner(G, node):
 
