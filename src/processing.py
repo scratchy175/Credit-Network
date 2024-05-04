@@ -180,26 +180,25 @@ def debt_runner(G, node):
 
 def The_Average_Joe(G, node):
     aPayer = []
-    créanciers = []
+    # Calcul des dettes moyennes pour tous les noeuds une seule fois
     CapitalPrevisionnel = detteMoyenne(G)
     
+    # Filtrer et trier les successeurs directement en utilisant la compréhension de liste
+    créanciers = sorted(
+        [(succ, CapitalPrevisionnel[succ]) for succ in G.successors(node) if succ in CapitalPrevisionnel and CapitalPrevisionnel[succ] is not None],
+        key=lambda x: x[1],
+        reverse=True
+    )
     
-    for elt in G.successors(node):
-        for key in CapitalPrevisionnel.keys():
-            if elt == key:
-                créanciers.append((key, CapitalPrevisionnel[key]))
-               # print(f"Ajout du créancier {key} avec une dette moyenne de {CapitalPrevisionnel[key]}")
+    # Utiliser un ensemble pour des vérifications rapides
+    créanciers_set = {cr[0] for cr in créanciers}
     
-    créanciers = sorted(créanciers, key=lambda x: x[1] if x[1] is not None else float('-inf'), reverse=True)
-    
-    for elt in créanciers:
-        for edge in G.out_edges(node, data=True):
-            if edge[1] == elt[0]:
-                aPayer.append(edge)
-                #print(f"Ajout de paiement: {node} paie {edge[1]} avec les détails {edge[2]}")
-    
-    print("Paiements à effectuer:", aPayer)
+    # Collecter les arêtes à payer directement sans boucle interne
+    aPayer = [edge for edge in G.out_edges(node, data=True) if edge[1] in créanciers_set]
+
+    #print("Paiements à effectuer:", aPayer)
     return aPayer
+
 
 def back_to_the_richest(G, node):
     #print('Traitement du noeud : ',node)
