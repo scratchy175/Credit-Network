@@ -165,13 +165,13 @@ if __name__ == "__main__":
 
     tk.Label(root, text="Multiplicateur:").grid(row=1, column=0)
     weight_multiplier_entry = tk.Entry(root)
-    weight_multiplier_entry.insert(0, "2")  # Default value set here
+    weight_multiplier_entry.insert(0, "1.5")  # Default value set here
     weight_multiplier_entry.grid(row=1, column=1)
 
     tk.Label(root, text="Somme totale:").grid(row=2, column=0)
     total_weight_entry = tk.Entry(root)
     # il faudrait que la somme totale soit égale à la somme des poids des arêtes ou des noeuds ? ou une partie
-    total_weight_entry.insert(0, "1000000")  # Default value set here
+    total_weight_entry.insert(0, "50000000")  # Default value set here
     total_weight_entry.grid(row=2, column=1)
 
     # Graph selection setup

@@ -96,10 +96,6 @@ def misterBigHeart(G, node):
 
 
 def debtRunner(G, node):
-
-   # Print the type of the successors to verify it's an iterable
-    print(type(G.successors(node)))
-    print(list(G.successors(node)))
     # Initialisation des variables
     aPayer = []
     # Trier les noeuds selon le nombre de dettes décroissant
