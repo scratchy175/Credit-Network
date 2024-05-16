@@ -60,6 +60,8 @@ class FolderApp:
         plt.ylim((0, 11000))
 
         # Générer un nom de fichier unique pour sauvegarder le graphique
+        if not os.path.exists('plots'):
+            os.makedirs('plots')
         unique_filename = self.generate_unique_filename('plots/analyse_simulations', '.png')
         plt.savefig(unique_filename)
         #plt.show()
