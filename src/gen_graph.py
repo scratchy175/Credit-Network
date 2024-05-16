@@ -1,5 +1,6 @@
 #!/opt/homebrew/Caskroom/miniconda/base/envs/graph/bin/python
 
+from json import load
 import sys
 import networkx as nx
 import random
@@ -9,6 +10,7 @@ from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 
+from graph_utils import load_graph
 
 
 min_weight = 100
@@ -188,13 +190,13 @@ if __name__ == "__main__":
     #friends_dict = generate_friends_for_each_node(G)
     #print(friends_dict)
     #print(len(friends_dict))
-    out_degrees = [G.out_degree(node) for node in G.nodes()]
+    """out_degrees = [G.out_degree(node) for node in G.nodes()]
     out_degrees.sort()
     plt.plot(out_degrees)
     plt.xlabel("Node Index")
     plt.ylabel("Out-Degree")
     plt.title("Out-Degree Distribution")
-    plt.show()
+    plt.show()"""
 
    
     # FAIRE UN TRUC AVEC LA SEED
@@ -207,7 +209,9 @@ if __name__ == "__main__":
     '''
     for node in G.nodes():
         print(f"Node {node} has out-degree {G.out_degree(node)}")'''
-    print(f"Diameter of the graph: {nx.diameter(G)}")
+    #print(f"Diameter of the graph: {nx.diameter(G, usebounds=False)}")
+    #G = load_graph("graphs/BA_m30_n10000_e299100.gpickle")
+    print(f"Density of the graph: {nx.density(G)}")
     
     """for node in G.nodes():
         print(f"Node {node} has out-degree {G.in_degree(node)}")"""
