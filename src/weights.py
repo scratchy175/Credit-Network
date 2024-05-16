@@ -125,7 +125,6 @@ def theGodpayer(G, tot_weight):
             if abs(agent[1]) < tot_weight and agent[1] < 0:
                 aPreter = abs(agent[1])
                 G.nodes[node]['weight'] = aPreter
-                print(f"Prêt de {aPreter} à l'agent {agent[0]}")
                 tot_weight -= aPreter
     # Distribution du reste du budget si disponible
     if tot_weight > 0 and len(categories[1]) > 0:
