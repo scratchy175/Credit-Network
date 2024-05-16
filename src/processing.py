@@ -39,16 +39,16 @@ def process_node_edges(G, node, accumulated_weights, strategy_func):
             break
     return edges_removed
 
-def oldest_first(G, node):
+def oldestFirst(G, node):
     return sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('date'))
 
-def newest_first(G, node):
+def newestFirst(G, node):
     return sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('date'), reverse=True)
 
-def highest_weight_first(G, node):
+def highestWeightFirst(G, node):
     return sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
 
-def lowest_weight_first(G, node):
+def lowestWeightFirst(G, node):
     return sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'))
 
 
@@ -78,7 +78,7 @@ def bankBuster(G, node):
 
 
 
-def Mister_big_heart(G, node):
+def misterBigHeart(G, node):
     capitalPrevisionnel = capital
 
     créanciers = sorted(
@@ -95,7 +95,7 @@ def Mister_big_heart(G, node):
 
 
 
-def debt_runner(G, node):
+def debtRunner(G, node):
 
    # Print the type of the successors to verify it's an iterable
     print(type(G.successors(node)))
@@ -113,7 +113,7 @@ def debt_runner(G, node):
         )
     return aPayer
 
-def The_Average_Joe(G, node):
+def theAverageJoe(G, node):
    
     CapitalPrevisionnel = detteMoy
 
@@ -131,7 +131,7 @@ def The_Average_Joe(G, node):
     ]
 
 
-def back_to_the_richest(G, n):
+def backToTheRichest(G, n):
     # Calculer la "richesse" de chaque nœud en tant que créancier
     # La richesse est définie comme la somme des dettes qu'ils possèdent, soit le poids total des arêtes entrantes
     creditor_wealth = capital
@@ -143,7 +143,7 @@ def back_to_the_richest(G, n):
     )
 
 
-def heivyweightv2(G,node):
+def heivyWeightv2(G,node):
     out_edges = sorted(G.out_edges(node, data=True), key=lambda x: x[2].get('weight'), reverse=True)
     aPayer = []
     capital = G.nodes[node]['weight']

@@ -10,6 +10,7 @@ import numpy as np
 from processing import beginningCapital
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
+import csv
 
 from process_algo import calculDeficit, detteMoyenne, generate_friends_for_each_node
 
@@ -33,58 +34,45 @@ def manage_pre_algo(filename):
             
     return G
 
-def plot_graph(data):
+
+def save_bankruptcy_data(simulation_dir, simulation_num, SG, total_weight):
+    """Append the number of bankruptcies and total weight in a CSV file."""
+    
+    filename = os.path.join(simulation_dir, "bankruptcy_data_all_simulations.csv")
+    file_exists = os.path.isfile(filename)
+
+    with open(filename, 'a', newline='') as csvfile:
+        fieldnames = ['Simulation', 'Nombre de faillites', 'Poids total']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        
+        # Write the header only if the file does not exist
+        if not file_exists:
+            writer.writeheader()
+        
+        bankruptcies = sum(SG.out_degree(node) > 0 for node in SG.nodes())
+        writer.writerow({'Simulation': simulation_num, 'Nombre de faillites': bankruptcies, 'Poids total': total_weight})
+    
+    return bankruptcies
+
+def plot_graph_(data, simulation_dir):
     """Plot a graph with number of bankruptcies on the x-axis and total_weight on the y-axis."""
     # Unpack the data
     total_weights, bankruptcies = zip(*data)
 
     # Create the plot
     plt.figure(figsize=(10, 6))
-    plt.plot(bankruptcies, total_weights, marker='o')
-
-    # Label the axes
-    plt.xlabel('Nombre de faillites')
-    plt.ylabel('Somme totale')
-
-    # Show the plot
-    plt.show()
-
-
-def save_bankruptcy_data(simulation_dir, simulation_num, SG, total_weight):
-
-
-    """Append the number of bankruptcies and total weight in a text file."""
-    
-    filename = os.path.join(simulation_dir, "bankruptcy_data_all_simulations.txt")
-
-    with open(filename, 'a') as txtfile:
-        bankruptcies = sum(SG.out_degree(node) > 0 for node in SG.nodes())
-        txtfile.write(f"Simulation {simulation_num} : (Nombre de faillites : {bankruptcies}, Poids total : {total_weight})\n")
-    return bankruptcies
-
-def plot_graph_2(data, simulation_dir):
-    """Plot a smooth graph with number of bankruptcies on the x-axis and total_weight on the y-axis."""
-    # Unpack the data
-    total_weights, bankruptcies = zip(*data)
-
-    # Create an interpolation function
-    x = np.array(bankruptcies)
-    y = np.array(total_weights)
-
-    # Create the plot
-    plt.figure(figsize=(10, 6))
-    plt.plot(x, y, marker='')
+    plt.plot(bankruptcies, total_weights)
 
     # Label the axes
     plt.xlabel('Somme totale')
     plt.ylabel('Nombre de faillites')
 
-    # Show the plot
-    #plt.show()
+    plt.ylim((0, 11000))
 
     # Save the plot
     plt.savefig(f"{simulation_dir}/plot.png")
     plt.close()
+
 
 def setup_simulation():
     strategy_func = strategy_var.get()
@@ -107,7 +95,10 @@ def run_simulation(G, filename, strategy_func, weights_func):
         weight_multiplier = float(weight_multiplier_entry.get())
         total_weight = float(total_weight_entry.get())
         timestamp = int(time.time())
-        simulation_dir = f"simulations/{timestamp}"
+        # Formatted directory name using graph name and strategy names
+        graph_name = Path(filename).stem.split("_")
+        strategies_name = f"{strategy_func.__name__}_{weights_func.__name__}"
+        simulation_dir = f"simulations/{graph_name[0]}_{graph_name[3]}_{strategies_name}"
         if not os.path.exists(simulation_dir):
             os.makedirs(simulation_dir)
         save_parameters(simulation_dir, Path(str(filename)).stem, strategy_func.__name__, weights_func.__name__, num_simulations, weight_multiplier, total_weight)
@@ -121,7 +112,6 @@ def run_simulation(G, filename, strategy_func, weights_func):
 
             # Distribution de l'argent
             weights_func(SG, total_weight)
-            print("L'argent a été distribué.", i+1)
             edges_removed = True
             for node in SG.nodes(data=True):
                 beginningCapital[node[0]] = node[1]['weight']
@@ -154,7 +144,7 @@ def run_simulation(G, filename, strategy_func, weights_func):
             total_weight = total_weight * weight_multiplier
         print("Toutes les simulations sont terminées.")
         print(list_of_bankruptcies)
-        plot_graph_2(list_of_bankruptcies, simulation_dir)
+        plot_graph_(list_of_bankruptcies, simulation_dir)
         messagebox.showinfo("Simulation terminées", f"Les résultats des simulations ont été enregistrés dans le dossier {simulation_dir}.")
     
 

@@ -144,11 +144,10 @@ def create_new_graph():
     num_nodes = G.number_of_nodes()
     num_edges = G.number_of_edges()
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"graphs/{type_graph}_n{num_nodes}_e{num_edges}_{current_time}.gpickle"
+    filename = f"graphs/{type_graph}_n{num_nodes}_e{num_edges}.gpickle"
     save_graph(G, filename)
     print("Graphe sauvegardé dans : ", filename)
     return G, filename
-
 
 
 def has_multiple_directed_edges(G):

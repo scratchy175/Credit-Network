@@ -2,9 +2,6 @@ import os
 import pickle
 import networkx as nx
 
-from process_algo import calculDeficit, detteMoyenne, generate_friends_for_each_node
-
-import processing
 
 def save_graph(G, filename):
     """
@@ -37,8 +34,5 @@ def load_graph(filename):
         print(f"Aucun fichier trouvé à : {filename}")
         exit(1)
 
-if __name__ == "__main__": 
-    G = load_graph('graphs/BA_m60_n10000_e596400_20240515_210628.gpickle')
-    print(f"Diameter of the graph: {nx.diameter(G)}")
 
 
