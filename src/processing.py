@@ -4,11 +4,12 @@ import pickle
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
 global beginningCapital
 beginningCapital = {}
 
 global friends, CapitalPrevisionnel
-friends = []
+friends = {}
 
 global capital
 capital = {}
@@ -16,6 +17,8 @@ capital = {}
 global detteMoy
 detteMoy = {}
 
+global nbDettes
+nbDettes = {}
 
 """
 Permet de traiter(payer les dettes) un noeud selon une stratégie donnée
@@ -96,18 +99,18 @@ def misterBigHeart(G, node):
 
 
 def debtRunner(G, node):
-    # Initialisation des variables
-    aPayer = []
-    # Trier les noeuds selon le nombre de dettes décroissant
-    prio = sorted(G.successors(node), key=lambda x: G.out_degree(x), reverse=True)
+    # Extraire tous les arcs sortants du nœud spécifié
+    arcs_sortants = list(G.out_edges(node, data=True))
+    # Calculer le degré sortant uniquement pour les nœuds de destination
+    degre_sortant = {}
+    for _, destination,_ in arcs_sortants:
+        if destination not in degre_sortant:
+            degre_sortant[destination] = G.out_degree(destination)
 
-    for creancier in prio:
-        aPayer.extend(
-            edge
-            for edge in G.out_edges(node, data=True)
-            if edge[1] == creancier
-        )
-    return aPayer
+    # Trier les arcs en fonction du degré sortant des nœuds de destination
+    arcs_sortants_ordonnes = sorted(arcs_sortants, key=lambda x: degre_sortant[x[1]], reverse=True)
+
+    return arcs_sortants_ordonnes
 
 def theAverageJoe(G, node):
    
@@ -151,7 +154,9 @@ def heivyWeightv2(G,node):
     return aPayer
     
 def powerOfFriendship(G, node):
-    out_edges = list(G.out_edges(node,data = True))
-    aVoir = [(friends[i], out_edges[i]) for i in range(len(out_edges))]
-    aVoir = sorted(aVoir, key= lambda x : x[0])
-    return [i[1] for i in aVoir]
+    friends_list = friends[node]
+    return [
+        edge
+        for edge in G.out_edges(node, data=True)
+        if edge[1] in friends_list
+    ]

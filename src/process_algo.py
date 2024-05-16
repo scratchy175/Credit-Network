@@ -32,40 +32,6 @@ def generate_friends_for_each_node(G):
 
     return friends_dict
 
-def pickletolist(pickle_file):
-    # Charger la liste de listes depuis le fichier Pickle
-    try:
-        with open(pickle_file, "rb") as file:
-            friends_list = pickle.load(file)
-    except FileNotFoundError:
-        print(f"Le fichier {pickle_file} n'existe pas.")
-        return None
-    except Exception as e:
-        print(f"Une erreur s'est produite lors du chargement du fichier {pickle_file}: {e}")
-        return None
-    else:
-        return friends_list
-    finally:
-        file.close()
-
-# Utilisation de la fonction pour charger une liste depuis un fichier Pickle
-# ten = pickletolist("friends_data_10000.pickle")
-#seven = pickletolist("friends_data_7500.pickle")
-#five = pickletolist("friends_data_5000.pickle")
-seven=[]
-five=[]
-
-def definit_amis(n):
-    if n ==  10000:
-        return ten
-    if n == 7500:
-        return seven
-    if n == 5000:
-        return five
-    else : 
-        liste = [ i for i in range(n)]
-        liste = liste.shuffle()
-        return liste
 
 def calculDeficit(G):
     deficits = {}
@@ -92,10 +58,10 @@ def detteMoyenne(G):
     return average_debts
 
 def nbDettes(G):
-    outgoing_edges_count = {}
-    for node in G.nodes():
-        outgoing_edges_count[node] = G.out_degree(node)
-    return outgoing_edges_count
+    return {node: G.out_degree(node) for node in G.nodes()}
+
+def trierDecroissant(G):
+    return sorted(nbDettes(G).items(), key=lambda x: x[1], reverse=True)
 
 def sommeDettes(G):
     outgoing_weights = {}
