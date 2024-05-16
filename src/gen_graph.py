@@ -104,18 +104,19 @@ def erdos_renyi_multigraph2(n, p, seed=None):
     # Add nodes
     for node in range(n):
         G.add_node(node, weight=0)
-
+    mindeg = 10000
      # Add edges with randomized edge counts
     for i in range(n):
         for j in range(n):
             if i != j and random.random() < p:
                 # Random number of edges (Poisson distribution could be used for realistic edge counts)
                 num_edges = np.random.poisson(lam=0.35)
+                
                 for _ in range(num_edges):
                     date = random_date(min_date)
                     weight = random.randint(min_weight, max_weight)
                     G.add_edge(i, j, date=date, weight=weight)
-
+    print(mindeg)
     return G
 
 def create_new_graph():
@@ -196,8 +197,7 @@ if __name__ == "__main__":
     plt.title("Out-Degree Distribution")
     plt.show()
 
-    # print(f"Diameter of the graph: {nx.diameter(G)}")
-
+   
     # FAIRE UN TRUC AVEC LA SEED
 
 
@@ -205,9 +205,11 @@ if __name__ == "__main__":
     #G = load_graph("graphs/ER_p0.02_n100_e201_20240503_230337.gpickle")
     # print(G.edges())
     # print out degrees
+    '''
     for node in G.nodes():
-        print(f"Node {node} has out-degree {G.out_degree(node)}")
-
+        print(f"Node {node} has out-degree {G.out_degree(node)}")'''
+    print(f"Diameter of the graph: {nx.diameter(G)}")
+    
     """for node in G.nodes():
         print(f"Node {node} has out-degree {G.in_degree(node)}")"""
     
