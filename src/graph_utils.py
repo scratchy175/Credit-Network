@@ -1,9 +1,7 @@
 import os
 import pickle
+import networkx as nx
 
-from process_algo import calculDeficit, detteMoyenne, generate_friends_for_each_node
-
-import processing
 
 def save_graph(G, filename):
     """
@@ -35,7 +33,6 @@ def load_graph(filename):
     else:
         print(f"Aucun fichier trouvé à : {filename}")
         exit(1)
-
 
 
 

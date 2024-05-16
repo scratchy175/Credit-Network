@@ -1,7 +1,7 @@
 import random
 
 
-def same_weight(G, tot_weight):
+def equalizer(G, tot_weight):
     """
     Ajoute un poids identique à chaque noeud du graphe G.
 
@@ -20,7 +20,7 @@ def same_weight(G, tot_weight):
         G.nodes[node]['weight'] = weight_per_node
 
 
-def goodman_show(G, tot_weight):
+def goodmanShow(G, tot_weight):
     """
     Applique la stratégie de The Goodman Show sur un MultiDiGraph G où chaque
     arête représente une dette d'un agent vers un autre.
@@ -40,7 +40,7 @@ def goodman_show(G, tot_weight):
         G.nodes[node]['weight'] = tot_weight * percentage_of_total
 
 
-def goodman_show_v2(G, tot_weight):
+def goodmanShowV2(G, tot_weight):
     """
     Applique la version V2 de The Goodman Show sur un MultiDiGraph G où chaque
     arête représente une dette et le focus est mis sur le nombre de dettes.
@@ -93,7 +93,7 @@ def divergent(G, tot_weight):
             G.nodes[node]['weight'] = G.nodes[node].get('weight', 0) + equal_share
 
 
-def the_godpayer(G, tot_weight):
+def theGodpayer(G, tot_weight):
     """
     Applique l'algorithme 'The GodPayer' sur un graphe G et la liste des capitaux des agents.
     
