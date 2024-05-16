@@ -148,11 +148,8 @@ def run_simulation(G, filename, strategy_func, weights_func):
         messagebox.showinfo("Simulation terminées", f"Les résultats des simulations ont été enregistrés dans le dossier {simulation_dir}.")
     
 
-
-
 if __name__ == "__main__":
     
-
     # Main window setup
     root = tk.Tk()
     root.title("Configuration de la simulation")
