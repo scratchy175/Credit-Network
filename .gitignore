@@ -2,3 +2,4 @@ __pycache__
 .vscode
 graphs/.DS_Store
 .DS_Store
+./Simulations
