@@ -154,9 +154,20 @@ def heivyWeightv2(G,node):
     return aPayer
     
 def powerOfFriendship(G, node):
+    # Liste des amis du node
     friends_list = friends[node]
-    return [
-        edge
+    
+    # Create a dictionary to map friends to their indices for O(1) index access
+    friends_index = {friend: index for index, friend in enumerate(friends_list)}
+    
+    # Collect all outgoing edges to friends
+    friendship_edges = [
+        edge 
         for edge in G.out_edges(node, data=True)
-        if edge[1] in friends_list
+        if edge[1] in friends_index
     ]
+    
+    # Sort the edges based on the order of friends in friends_list
+    friendship_edges.sort(key=lambda x: friends_index[x[1]])
+    
+    return friendship_edges

@@ -20,7 +20,7 @@ def manage_pre_algo(filename):
     print(f"Graphe chargé à partir de : {filename}")
     # Check for related files
     graph_name = os.path.splitext(filename)[0]
-    related_files = [f'{graph_name}_genereFriends.pickle', f'{graph_name}_calculDeficit.pickle', f'{graph_name}_calculDetteMoyenne.pickle']
+    related_files = [f'{graph_name}_genereFriends.pickle']
     for related_file in related_files:
         if os.path.exists(related_file):
                 with open(related_file, 'rb') as f:
