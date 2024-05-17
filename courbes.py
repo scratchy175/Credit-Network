@@ -48,7 +48,7 @@ class FolderApp:
         selected_folders = [self.listbox.get(i) for i in selected_indices]
 
         fig, ax = plt.subplots()
-        ax.set_xlabel('Argent injcté par la banque')
+        ax.set_xlabel('Argent injecté par la banque')
         ax.set_ylabel('Nombre de faillites')
 
         # Dictionnaire des remplacements
