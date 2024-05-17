@@ -1,7 +1,6 @@
 import os
 import tkinter as tk
 import pandas as pd
-
 import matplotlib.pyplot as plt
 
 class FolderApp:
@@ -24,7 +23,6 @@ class FolderApp:
         self.plot_button = tk.Button(master, text="Analyser et afficher le graphique", command=self.read_files_and_plot)
         self.plot_button.pack()
 
-        # Chemin du dossier parent fixe
         self.directory_path = "simulations/"
         self.populate_listbox()
 
@@ -50,32 +48,68 @@ class FolderApp:
         selected_folders = [self.listbox.get(i) for i in selected_indices]
 
         fig, ax = plt.subplots()
-        ax.set_xlabel('Poids total')
+        ax.set_xlabel('Argent injecté par la banque')
         ax.set_ylabel('Nombre de faillites')
+
+        # Dictionnaire des remplacements
+        replacements = {
+            "highestWeightFirst": "Heavy Weight",
+            "heivyWeightv2": "Heavy Weight V2",
+            "lowestWeightFirst": "Light Weight",
+            "newestFirst": "LIFO",
+            "oldestFirst": "FIFO",
+            "backToTheRichest": "Back To The Richest",
+            "bankBuster":"Bank Buster",
+            "debtRunner":"Debt Runner",
+            "misterBigHeart":"Mister Big Heart",
+            "powerOfFriendship":"Power Of Friendship",
+            "theAverageJoe":"The Average Joe",
+            "divergent":"Divergent",
+            "equalizer":"Equalizer",
+            "goodmanShow":"Goodman Show",
+            "goodmanShowV2":"Goodman Show V2",
+            "theGodpayer":"The Godpayer"
+        }
 
         for folder in selected_folders:
             file_path = os.path.join(self.directory_path, folder, "bankruptcy_data_all_simulations.csv")
             if os.path.exists(file_path):
                 data = pd.read_csv(file_path)
 
-                # Tracer une courbe par fichier, utilisant 'Poids total' comme abscisse
-                ax.plot(data['Poids total'], data['Nombre de faillites'], label=f'Faillites - {folder}')
+                # Extract the prefix from the folder name
+                prefix = folder.split('_')[0]
 
-        ax.legend()
-        plt.title('Nombre de faillites par poids total')
+                # Extract only the relevant part of the folder name for the label
+                folder_parts = folder.split('_')
+                label = f'{folder_parts[-2]}_{folder_parts[-1]}'
+
+                # Apply the replacements
+                for old, new in replacements.items():
+                    label = label.replace(old, new)
+
+                # Include the prefix in the label
+                label = f'{prefix}_{label}'
+
+                # Set color based on prefix
+                color = 'blue' if prefix.startswith('BA') else 'red' if prefix.startswith('ER') else 'black'
+
+                ax.plot(data['Poids total'], data['Nombre de faillites'], label=f'{folder_parts[0]}_{folder_parts[1]}', color=color)
+
+        title_prefix = selected_folders[0].split("_")[2] if len(selected_folders) > 0 else ''
+        plt.title(f'Nombre de faillites en fonction de l\'argent injecté par la banque ({title_prefix})')
         plt.tight_layout()
         plt.ylim((0, 11000))
 
-        # Générer un nom de fichier unique pour sauvegarder le graphique
+        # Move the legend outside the plot
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2)
+
         if not os.path.exists('plots'):
             os.makedirs('plots')
         filename = self.filename_entry.get()
         if not filename:
             filename = 'analyse_simulations'
         unique_filename = self.generate_unique_filename(f"plots/{filename}", '.png')
-        plt.savefig(unique_filename)
-        #plt.show()
-
+        plt.savefig(unique_filename, bbox_inches='tight')
         print(f"Le graphique a été sauvegardé sous '{unique_filename}'.")
 
 root = tk.Tk()

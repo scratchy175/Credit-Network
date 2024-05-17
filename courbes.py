@@ -1,5 +1,6 @@
 import os
 import tkinter as tk
+from matplotlib.pylab import f
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -84,9 +85,9 @@ class FolderApp:
                 for old, new in replacements.items():
                     label = label.replace(old, new)
 
-                ax.plot(data['Poids total'], data['Nombre de faillites'], label=f'{label}')
+                ax.plot(data['Poids total'], data['Nombre de faillites'], label=f'{folder_parts[0]}_{folder_parts[1]}')
 
-        plt.title('Nombre de faillites en fonction de l\' argent injecté par la banque')
+        plt.title(f'Nombre de faillites en fonction de l\' argent injecté par la banque({selected_folders[0].split("_")[2]}_{selected_folders[0].split("_")[3]})')
         plt.tight_layout()
         plt.ylim((0, 11000))
         
