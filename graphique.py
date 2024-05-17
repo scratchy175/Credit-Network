@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 import pandas as pd
+
 import matplotlib.pyplot as plt
 
 class FolderApp:
@@ -13,6 +14,12 @@ class FolderApp:
 
         self.listbox = tk.Listbox(master, selectmode=tk.MULTIPLE, width=50, height=15)
         self.listbox.pack()
+
+        self.filename_label = tk.Label(master, text="Nom du fichier:")
+        self.filename_label.pack()
+
+        self.filename_entry = tk.Entry(master)
+        self.filename_entry.pack()
 
         self.plot_button = tk.Button(master, text="Analyser et afficher le graphique", command=self.read_files_and_plot)
         self.plot_button.pack()
@@ -62,10 +69,13 @@ class FolderApp:
         # Générer un nom de fichier unique pour sauvegarder le graphique
         if not os.path.exists('plots'):
             os.makedirs('plots')
-        unique_filename = self.generate_unique_filename('plots/analyse_simulations', '.png')
+        filename = self.filename_entry.get()
+        if not filename:
+            filename = 'analyse_simulations'
+        unique_filename = self.generate_unique_filename(f"plots/{filename}", '.png')
         plt.savefig(unique_filename)
         #plt.show()
-        
+
         print(f"Le graphique a été sauvegardé sous '{unique_filename}'.")
 
 root = tk.Tk()
